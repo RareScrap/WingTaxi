@@ -12,7 +12,8 @@
 			var myPlacemark,
 				myMap = new ymaps.Map('map', {
 					center: [52.286387, 104.280660],
-					zoom: 15
+					zoom: 15,
+					controls: ['zoomControl', 'fullscreenControl']
 				});
 
 			myPlacemark = createPlacemark([52.286387, 104.280660]);
