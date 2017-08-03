@@ -10,16 +10,21 @@
 
         function init(){
 			var myPlacemark,
-				myMap = new ymaps.Map("map", {
+				myMap = new ymaps.Map('map', {
 					center: [52.286387, 104.280660],
 					zoom: 15
 				});
 
-            myPlacemark = new ymaps.Placemark([52.286387, 104.280660], {
+			myPlacemark = createPlacemark([52.286387, 104.280660]);
+			myMap.geoObjects.add(myPlacemark);
+			getAddress([52.286387, 104.280660]);
+
+            /*myPlacemark = new ymaps.Placemark([52.286387, 104.280660], {
                 hintContent: 'Иркутск!',
                 balloonContent: 'Заебись'
             });
-            myMap.geoObjects.add(myPlacemark);
+            myMap.geoObjects.add(myPlacemark);*/
+
 
 
             // Обработка события, возникающего при щелчке
@@ -42,6 +47,33 @@
 					});
 				}
        
+				getAddress(coords);
+			});
+
+			// Обработка события, возникающего при щелчке
+			// правой кнопки мыши в любой точке карты.
+			// При возникновении такого события покажем всплывающую подсказку
+			// в точке щелчка.
+			/*myMap.events.add('contextmenu', function (e) {
+				myMap.hint.open(e.get('coords'), 'Кто-то щелкнул правой кнопкой');
+			});
+
+			// Скрываем хинт при открытии балуна.
+			myMap.events.add('balloonopen', function (e) {
+				myMap.hint.close();
+			});*/
+
+			// Создание метки.
+			function createPlacemark(coords) {
+				return new ymaps.Placemark(coords, {
+					iconCaption: 'поиск...'
+				}, {
+					preset: 'islands#violetDotIconWithCaption',
+					draggable: false
+				});
+			}
+
+			function getAddress(coords) {
 				myPlacemark.properties.set('iconCaption', 'поиск...');
 				ymaps.geocode(coords).then(function (res) {
 					var firstGeoObject = res.geoObjects.get(0);
@@ -58,29 +90,6 @@
 							// В качестве контента балуна задаем строку с адресом объекта.
 							balloonContent: firstGeoObject.getAddressLine()
 						});
-				});
-			});
-
-			// Обработка события, возникающего при щелчке
-			// правой кнопки мыши в любой точке карты.
-			// При возникновении такого события покажем всплывающую подсказку
-			// в точке щелчка.
-			myMap.events.add('contextmenu', function (e) {
-				myMap.hint.open(e.get('coords'), 'Кто-то щелкнул правой кнопкой');
-			});
-
-			// Скрываем хинт при открытии балуна.
-			myMap.events.add('balloonopen', function (e) {
-				myMap.hint.close();
-			});
-
-			// Создание метки.
-			function createPlacemark(coords) {
-				return new ymaps.Placemark(coords, {
-					iconCaption: 'поиск...'
-				}, {
-					preset: 'islands#violetDotIconWithCaption',
-					draggable: true
 				});
 			}
 		}
