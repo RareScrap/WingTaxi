@@ -77,13 +77,17 @@
 				myPlacemark.properties.set('iconCaption', 'поиск...');
 				ymaps.geocode(coords).then(function (res) {
 					var firstGeoObject = res.geoObjects.get(0);
+					// Название населенного пункта или вышестоящее административно-территориальное образование.
+					// Нужно сохранять город, чтобы передать его на сервер
+					var city = firstGeoObject.getLocalities().length ? firstGeoObject.getLocalities() : firstGeoObject.getAdministrativeAreas()
 
 					myPlacemark.properties
 						.set({
 							// Формируем строку с данными об объекте.
 							iconCaption: [
 								// Название населенного пункта или вышестоящее административно-территориальное образование.
-								firstGeoObject.getLocalities().length ? firstGeoObject.getLocalities() : firstGeoObject.getAdministrativeAreas(),
+								// Нужно сохранять город, чтобы передать его на сервер
+								//var city = firstGeoObject.getLocalities().length ? firstGeoObject.getLocalities() : firstGeoObject.getAdministrativeAreas(),
 								// Получаем путь до топонима, если метод вернул null, запрашиваем наименование здания.
 								firstGeoObject.getThoroughfare() || firstGeoObject.getPremise(),
 								firstGeoObject.getPremiseNumber()
