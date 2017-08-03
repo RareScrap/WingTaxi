@@ -108,7 +108,7 @@
 								// Нужно сохранять город, чтобы передать его на сервер
 								//var city = firstGeoObject.getLocalities().length ? firstGeoObject.getLocalities() : firstGeoObject.getAdministrativeAreas(),
 								// Получаем путь до топонима, если метод вернул null, запрашиваем наименование здания.
-								firstGeoObject.getThoroughfare() || firstGeoObject.getPremise(),
+								firstGeoObject.getThoroughfare() || firstGeoObject.getPremise() || firstGeoObject.getLocalities()[1],
 								firstGeoObject.getPremiseNumber()
 								// В качестве контента балуна задаем строку с адресом объекта.
 								//firstGeoObject.getAddressLine()
