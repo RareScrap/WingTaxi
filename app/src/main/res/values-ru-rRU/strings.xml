@@ -2,4 +2,7 @@
 <resources>
     <string name="map_menu_item">Я здесь!</string>
     <string name="history_menu_item">История заказов</string>
+    <string name="login_phone_hint">Введите сюда ваш телефон</string>
+    <string name="login_enter">Продолжить</string>
+    <string name="login_code_hint">Введить код, полученный в SMS</string>
 </resources>
