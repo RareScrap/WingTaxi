@@ -127,7 +127,7 @@ public class LoginActivity extends AppCompatActivity {
         public void onClick(View v) {
             viewPager.setCurrentItem(viewPager.getCurrentItem()+1, true);
 
-            /*if (codeField.getText().toString().isEmpty())
+            if (codeField.getText().toString().isEmpty())
                 return;
 
 
@@ -141,7 +141,7 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             } else {
                 Toast.makeText(LoginActivity.this, "Неверный код", Toast.LENGTH_LONG).show();
-            }*/
+            }
 
         }
     };

@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity
             webView = (WebView) findViewById(R.id.webView);
             WebSettings webSettings = webView.getSettings();
             webSettings.setJavaScriptEnabled(true);
-            webView.loadUrl("http://http://romhacking.pw/taxi_map/map.html");
+            webView.loadUrl("http://romhacking.pw/taxi_map/map.html");
         }
 
 
