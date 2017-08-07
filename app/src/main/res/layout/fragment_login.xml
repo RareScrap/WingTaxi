@@ -1,68 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/AppTheme.NoActionBar"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                style="@style/AppTheme.NoActionBar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/LoginBackground">
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/imageView"
         android:layout_width="wrap_content"
-        android:layout_height="300dp"
+        android:layout_height="200dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_margin="@dimen/login_elements_margin"
-        android:src="@drawable/logo"
-        app:srcCompat="@mipmap/ic_launcher"/>
+        app:srcCompat="@drawable/logo"/>
 
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/phoneInputLayout"
-        android:layout_width="180dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/imageView2"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_below="@+id/imageView"
         android:layout_centerInParent="true"
-        android:layout_centerVertical="false"
-        android:layout_margin="@dimen/login_elements_margin"
-        >
+        android:layout_marginBottom="@dimen/login_elements_margin"
+        android:layout_marginTop="@dimen/login_elements_margin"/>
 
-        <EditText
-            android:id="@+id/phoneField"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/login_phone_hint"/>
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/codeInputLayout"
-        android:layout_width="220dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/imageView2"
-        android:layout_centerInParent="true"
-        android:layout_centerVertical="false"
-        android:layout_margin="@dimen/login_elements_margin"
-        android:visibility="invisible">
-
-        <EditText
-            android:id="@+id/codeField"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/login_code_hint"/>
-    </android.support.design.widget.TextInputLayout>
 
     <Button
         android:id="@+id/login_enter"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/phoneInputLayout"
-        android:layout_alignLeft="@+id/phoneInputLayout"
-        android:layout_alignRight="@+id/phoneInputLayout"
-        android:layout_alignStart="@+id/phoneInputLayout"
-        android:layout_below="@+id/phoneInputLayout"
-        android:layout_marginBottom="@dimen/login_elements_margin"
-        android:layout_marginTop="@dimen/login_elements_margin"
+        android:layout_below="@+id/viewPager"
+        android:layout_centerHorizontal="true"
+        android:background="@color/enterButtonBackground"
+        android:paddingEnd="@dimen/button_text_padding"
+        android:paddingStart="@dimen/button_text_padding"
         android:text="@string/login_enter"/>
 
 </RelativeLayout>

@@ -17,4 +17,16 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+
+    <!-- Кастомный цвет плавающего хинта для TextInputLayout-->
+    <style name="TextAppearence.TextInputLayout.Login" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/login_hint_color</item>
+    </style>
+
+    <style name="EditTextUnderline" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorControlNormal">#aaaaaa</item>
+        <item name="colorControlActivated">#aaaaaa</item>
+        <item name="colorControlHighlight">#aaaaaa</item>
+    </style>
+
 </resources>

@@ -1,16 +1,26 @@
 package com.apptrust.wingtaxi;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.vacxe.phonemask.*;
+
+import java.util.ArrayList;
 
 
 /**
@@ -20,9 +30,13 @@ public class LoginActivity extends AppCompatActivity {
     /** Кнопка "продолжить" */
     private Button button;
 
-    TextInputLayout a;
-    TextInputLayout b;
+    /** Контейнер текстовых полей с анимацией прокрутки */
+    private ViewPager viewPager;
 
+    /** {@link TextInputLayout} для номера телефона */
+    private TextInputLayout phoneInputLayout;
+    /** {@link TextInputLayout} для проверочного кода*/
+    private TextInputLayout codeInputLayout;
     /** Поле для ввода телефона */
     private EditText phoneField;
     /** Поле для ввода SMS кода */
@@ -31,24 +45,75 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Развертка разметки активити
         setContentView(R.layout.fragment_login);
 
-        // Получение ссылко на элементы GUI
-        phoneField = (EditText) findViewById(R.id.phoneField);
-        codeField = (EditText) findViewById(R.id.codeField);
+        // Получение ссылок на элементы GUI
+        viewPager = (ViewPager) findViewById(R.id.viewPager);
         button = (Button) findViewById(R.id.login_enter);
-
-        a = (TextInputLayout) findViewById(R.id.phoneInputLayout);
-        b = (TextInputLayout) findViewById(R.id.codeInputLayout);
-
 
         // Установка слушателей
         button.setOnClickListener(buttonClickListener);
 
-        // Применяем маску для воода телефона (для удобства пользователя)
-        PhoneMaskManager phoneMaskManager = new PhoneMaskManager();
-        phoneMaskManager.withMask(" (###) ###-##-##").withRegion("+7").
-                bindTo((EditText) findViewById(R.id.phoneField));
+        // Инициализация адаптера ViewPager
+        final int slides[] = new int[] { // Массив с разметками слайдов ViewPager'а
+                R.layout.viewpager_phone_slide_fragment_login,
+                R.layout.viewpager_code_slide_fragment_login
+        };
+        viewPager.setAdapter(new PagerAdapter() {
+            @Override
+            public int getCount() {
+                return slides.length;
+            }
+
+            /**
+             * Create the page for the given position.  The adapter is responsible
+             * for adding the view to the container given here, although it only
+             * must ensure this is done by the time it returns from
+             * {@link #finishUpdate(ViewGroup)}.
+             *
+             * @param container The containing View in which the page will be shown.
+             * @param position  The page position to be instantiated.
+             * @return Returns an Object representing the new page.  This does not
+             * need to be a View, but can be some other container of the page.
+             */
+            @Override
+            public Object instantiateItem(ViewGroup container, int position) {
+                LayoutInflater layoutInflater = (LayoutInflater)
+                        getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+                View view = layoutInflater.inflate(slides[position], container, false);
+                container.addView(view);
+
+                // Установки маски телефонного номера для соответствующего поля
+                if (slides[position] == R.layout.viewpager_phone_slide_fragment_login) {
+                    EditText editText = (EditText) view.findViewById(R.id.phoneField);
+
+                    phoneField = editText;
+
+                    PhoneMaskManager phoneMaskManager = new PhoneMaskManager();
+                    phoneMaskManager.withMask(" (###) ###-##-##").withRegion("+7").bindTo(editText);
+                }
+                if (slides[position] == R.layout.viewpager_code_slide_fragment_login) {
+                    EditText editText = (EditText) view.findViewById(R.id.codeField);
+                    codeField = editText;
+                }
+
+                return view;
+            }
+
+            @Override
+            public boolean isViewFromObject(View view, Object object) {
+                return view == object;
+            }
+
+            @Override
+            public void destroyItem(ViewGroup container, int position, Object object) {
+                View view = (View) object;
+                container.removeView(view);
+            }
+        });
     }
 
     private Button.OnClickListener buttonClickListener = new Button.OnClickListener() {
@@ -60,9 +125,9 @@ public class LoginActivity extends AppCompatActivity {
          */
         @Override
         public void onClick(View v) {
-            a.setVisibility(View.INVISIBLE);
-            b.setVisibility(View.VISIBLE);
-            if (codeField.getText().toString().isEmpty())
+            viewPager.setCurrentItem(viewPager.getCurrentItem()+1, true);
+
+            /*if (codeField.getText().toString().isEmpty())
                 return;
 
 
@@ -75,8 +140,8 @@ public class LoginActivity extends AppCompatActivity {
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
             } else {
-                Toast.makeText(LoginActivity.this, "Неправильный код", Toast.LENGTH_LONG).show();
-            }
+                Toast.makeText(LoginActivity.this, "Неверный код", Toast.LENGTH_LONG).show();
+            }*/
 
         }
     };
@@ -87,12 +152,11 @@ public class LoginActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-        if (a.getVisibility() == View.VISIBLE) {
+        if (viewPager.getCurrentItem() == 2) {
             super.onBackPressed();
             return;
         }
 
-        a.setVisibility(View.VISIBLE);
-        b.setVisibility(View.INVISIBLE);
+        viewPager.setCurrentItem(viewPager.getCurrentItem()-1, true);
     }
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.TextInputLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/codeInputLayout"
+    android:theme="@style/EditTextUnderline"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:textColorHint="@color/login_hint_color"
+    app:hintTextAppearance="@style/TextAppearence.TextInputLayout.Login">
+
+    <!-- app:hintTextAppearance - плавающий хинт
+     android:textColorHint - цвет статичного хинта -->
+
+    <EditText
+        android:id="@+id/codeField"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/login_code_hint"
+        android:textColor="@color/login_edittext_color"
+        />
+
+</android.support.design.widget.TextInputLayout>
