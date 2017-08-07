@@ -1,10 +1,12 @@
 package com.apptrust.wingtaxi;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.view.Display;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -48,6 +51,15 @@ public class MainActivity extends AppCompatActivity
             webView = (WebView) findViewById(R.id.webView);
             WebSettings webSettings = webView.getSettings();
             webSettings.setJavaScriptEnabled(true);
+
+            /*webView.setPadding(0, 0, 0, 0);
+            Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+            int width = display.getWidth();
+            Double val = new Double(width)/new Double(width);
+            val = val * 100d;
+            val.intValue();
+            webView.setInitialScale(val.intValue());*/
+
             webView.loadUrl("http://romhacking.pw/taxi_map/map.html");
         }
 
