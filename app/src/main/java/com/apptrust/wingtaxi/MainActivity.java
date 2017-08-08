@@ -62,7 +62,11 @@ public class MainActivity extends AppCompatActivity
                 }
             });
 
-            webView.loadUrl("http://romhacking.pw/taxi_map/map.html");
+            //
+            GPSJavaScriptInterface gpsJavaScriptInterface = new GPSJavaScriptInterface(this);
+            webView.addJavascriptInterface(gpsJavaScriptInterface, "gpsJavaScriptInterface");
+
+            webView.loadUrl("http://romhacking.pw/test_map/map.html");
         }
     }
 
