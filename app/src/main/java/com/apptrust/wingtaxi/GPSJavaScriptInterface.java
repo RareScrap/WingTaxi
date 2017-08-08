@@ -8,9 +8,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.webkit.JavascriptInterface;
+import android.widget.Toast;
+
+import im.delight.android.location.SimpleLocation;
 
 /**
  * Created by rares on 08.08.2017.
@@ -69,12 +74,11 @@ public class GPSJavaScriptInterface {
                 // result of the request.
             }
         } else {
-            LocationManager lm = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
-            Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            SimpleLocation location = new SimpleLocation(activity);
             if (location != null) {
                 double longitude = location.getLongitude();
                 double latitude = location.getLatitude();
-                ((MainActivity) activity).textView.setText(String.valueOf(longitude) + "_" + String.valueOf(latitude));
+                Toast.makeText(activity, String.valueOf(longitude) + "_" + String.valueOf(latitude), Toast.LENGTH_SHORT).show();
                 return String.valueOf(longitude) + "_" + String.valueOf(latitude);
             } else {
                 return "PIDOR!";

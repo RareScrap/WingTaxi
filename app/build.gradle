@@ -29,6 +29,7 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
 
     compile 'com.github.vacxe:phonemask:1.0.4'
+    compile 'com.github.delight-im:Android-SimpleLocation:v1.0.1'
 
     testCompile 'junit:junit:4.12'
 }
