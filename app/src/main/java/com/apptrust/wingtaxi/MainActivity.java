@@ -74,7 +74,9 @@ public class MainActivity extends AppCompatActivity
 
             //
             GPSJavaScriptInterface gpsJavaScriptInterface = new GPSJavaScriptInterface(this);
+            AdresTextViewJSInterface adresTextViewJSInterface = new AdresTextViewJSInterface(textView);
             webView.addJavascriptInterface(gpsJavaScriptInterface, "gpsJavaScriptInterface");
+            webView.addJavascriptInterface(adresTextViewJSInterface, "adresTextViewJSInterface");
 
             webView.clearCache(true);
             webView.loadUrl("http://romhacking.pw/test_map4/map.html");
