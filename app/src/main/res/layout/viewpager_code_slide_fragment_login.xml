@@ -18,7 +18,7 @@
         android:layout_width="220dp"
         android:layout_height="wrap_content"
         android:hint="@string/login_code_hint"
-        android:textColor="@color/login_edittext_color"
-        />
+        android:inputType="numberDecimal"
+        android:textColor="@color/login_edittext_color"/>
 
 </android.support.design.widget.TextInputLayout>
