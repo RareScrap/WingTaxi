@@ -30,8 +30,8 @@ public class GPSJavaScriptInterface {
         this.activity = activiy;
     }
 
-    @JavascriptInterface
-    public String getUserLocation() {
+
+    public double[] updateUserLocation() {
         if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED)
         {
@@ -79,37 +79,29 @@ public class GPSJavaScriptInterface {
                 double longitude = location.getLongitude();
                 double latitude = location.getLatitude();
                 Toast.makeText(activity, String.valueOf(longitude) + "_" + String.valueOf(latitude), Toast.LENGTH_SHORT).show();
-                return String.valueOf(longitude) + "_" + String.valueOf(latitude);
+                double[] coords = {longitude, latitude};
+                return coords;
+                //return String.valueOf(longitude) + "_" + String.valueOf(latitude);
             } else {
-                return "PIDOR!";
+                double[] coords = {0, 0};
+                return coords;
+                //return String.valueOf(0) + "_" + String.valueOf(0);
             }
         }
+        double[] coords = {0, 0};
+        return coords;
+        //return String.valueOf(0) + "_" + String.valueOf(0);
+    }
 
-        /* Нужно для примерного определения положения. Пока нахуй не надо
-        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED)
-        {
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
-                    Manifest.permission.ACCESS_COARSE_LOCATION)) {
+    @JavascriptInterface
+    public String getUserLatitude() {
+        String result = String.valueOf(updateUserLocation()[0]);
+        return result;
+    }
 
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            } else {
-
-                // No explanation needed, we can request the permission.
-
-                ActivityCompat.requestPermissions(activity,
-                        new String[]{Manifest.permission.READ_CONTACTS},
-                        MY_ACCESS_COARSE_LOCATION);
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
-            }
-        }*/
-        return "PIDOR!";
+    @JavascriptInterface
+    public String getUserLongitude() {
+        String result = String.valueOf(updateUserLocation()[1]);
+        return result;
     }
 }
