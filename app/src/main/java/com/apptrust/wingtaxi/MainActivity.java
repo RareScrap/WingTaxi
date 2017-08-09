@@ -76,7 +76,8 @@ public class MainActivity extends AppCompatActivity
             GPSJavaScriptInterface gpsJavaScriptInterface = new GPSJavaScriptInterface(this);
             webView.addJavascriptInterface(gpsJavaScriptInterface, "gpsJavaScriptInterface");
 
-            webView.loadUrl("http://romhacking.pw/test_map/map.html");
+            webView.clearCache(true);
+            webView.loadUrl("http://romhacking.pw/test_map4/map.html");
         }
     }
 
