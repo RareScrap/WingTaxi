@@ -18,7 +18,7 @@
         android:layout_margin="@dimen/login_elements_margin"
         app:srcCompat="@drawable/logo"/>
 
-    <android.support.v4.view.ViewPager
+    <com.apptrust.wingtaxi.NonSwipeableViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="70dp"

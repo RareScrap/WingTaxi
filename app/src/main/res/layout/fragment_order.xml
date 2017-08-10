@@ -14,13 +14,20 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
+    <ListView
+        android:id="@+id/adresListView"
+        android:layout_width="match_parent"
+        android:layout_height="300dp">
+
+    </ListView>
+
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/button3"
-        android:layout_below="@+id/adresListView"
         android:columnCount="2"
-        android:rowCount="1">
+        android:rowCount="1"
+        android:layout_above="@+id/button3"
+        android:layout_below="@+id/adresListView">
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -32,15 +39,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                app:srcCompat="@mipmap/ic_launcher" />
+                app:srcCompat="@mipmap/ic_launcher"/>
 
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
                 android:layout_above="@+id/imageButton2"
-                android:layout_centerHorizontal="true" />
+                android:layout_centerHorizontal="true"
+                android:text="TextView"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -52,34 +59,27 @@
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
                 android:layout_above="@+id/imageButton"
-                android:layout_centerHorizontal="true" />
+                android:layout_centerHorizontal="true"
+                android:text="TextView"/>
 
             <ImageButton
                 android:id="@+id/imageButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                app:srcCompat="@mipmap/ic_launcher" />
+                app:srcCompat="@mipmap/ic_launcher"/>
 
             <TextView
                 android:id="@+id/textView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
-                android:layout_below="@+id/imageButton"
                 android:layout_alignLeft="@+id/textView3"
-                android:layout_alignStart="@+id/textView3" />
+                android:layout_alignStart="@+id/textView3"
+                android:layout_below="@+id/imageButton"
+                android:text="TextView"/>
         </RelativeLayout>
 
     </GridLayout>
-
-    <com.apptrust.wingtaxi.customviews.AdresListView
-        android:id="@+id/adresListView"
-        android:layout_width="match_parent"
-        android:layout_height="300dp">
-
-    </com.apptrust.wingtaxi.customviews.AdresListView>
 
 </RelativeLayout>

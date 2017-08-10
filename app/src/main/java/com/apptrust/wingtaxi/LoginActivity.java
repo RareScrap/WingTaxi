@@ -31,7 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button button;
 
     /** Контейнер текстовых полей с анимацией прокрутки */
-    private ViewPager viewPager;
+    private NonSwipeableViewPager viewPager;
 
     /** {@link TextInputLayout} для номера телефона */
     private TextInputLayout phoneInputLayout;
@@ -50,7 +50,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.fragment_login);
 
         // Получение ссылок на элементы GUI
-        viewPager = (ViewPager) findViewById(R.id.viewPager);
+        viewPager = (NonSwipeableViewPager) findViewById(R.id.viewPager);
         button = (Button) findViewById(R.id.login_enter);
 
         // Установка слушателей
