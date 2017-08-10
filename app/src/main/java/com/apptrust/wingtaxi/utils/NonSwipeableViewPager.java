@@ -1,4 +1,4 @@
-package com.apptrust.wingtaxi;
+package com.apptrust.wingtaxi.utils;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;

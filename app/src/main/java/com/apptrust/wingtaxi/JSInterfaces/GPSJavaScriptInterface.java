@@ -1,4 +1,4 @@
-package com.apptrust.wingtaxi;
+package com.apptrust.wingtaxi.JSInterfaces;
 
 import android.Manifest;
 import android.app.Activity;
@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
+
+import com.apptrust.wingtaxi.R;
 
 import im.delight.android.location.SimpleLocation;
 

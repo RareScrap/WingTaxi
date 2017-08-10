@@ -1,4 +1,4 @@
-package com.apptrust.wingtaxi;
+package com.apptrust.wingtaxi.JSInterfaces;
 
 import android.webkit.JavascriptInterface;
 import android.widget.TextView;
