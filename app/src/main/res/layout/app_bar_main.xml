@@ -48,7 +48,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/textView"
-            android:text="Button"/>
+            android:text="@string/start_adres_added"/>
 
         <TextView
             android:id="@+id/textView"

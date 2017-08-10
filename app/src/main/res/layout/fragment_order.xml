@@ -7,27 +7,27 @@
         android:id="@+id/button3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:text="@string/order_ready"/>
 
-    <ListView
-        android:id="@+id/adresListView"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/adresRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="300dp">
 
-    </ListView>
+    </android.support.v7.widget.RecyclerView>
 
     <GridLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:columnCount="2"
-        android:rowCount="1"
+        android:layout_height="200dp"
         android:layout_above="@+id/button3"
-        android:layout_below="@+id/adresListView">
+        android:layout_below="@+id/adresRecyclerView"
+        android:columnCount="2"
+        android:rowCount="1">
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/imageButton2"
                 android:layout_centerHorizontal="true"
-                android:text="TextView"/>
+                android:text="@string/add_adres"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/imageButton"
                 android:layout_centerHorizontal="true"
-                android:text="TextView"/>
+                android:text="@string/add_time"/>
 
             <ImageButton
                 android:id="@+id/imageButton"
@@ -71,13 +71,11 @@
                 app:srcCompat="@mipmap/ic_launcher"/>
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/timeTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/textView3"
-                android:layout_alignStart="@+id/textView3"
                 android:layout_below="@+id/imageButton"
-                android:text="TextView"/>
+                android:layout_centerHorizontal="true"/>
         </RelativeLayout>
 
     </GridLayout>

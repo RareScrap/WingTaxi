@@ -6,4 +6,8 @@
     <string name="login_enter">Продолжить</string>
     <string name="login_code_hint">Введить код, полученный в SMS</string>
     <string name="gps_permission_explanation">Для автоматического определения вашего местоположение необходимо разрешение на использование GPS датчика. Если вы хотите предоставить приложению данное разрешение, нажмите \"Принять\"</string>
+    <string name="order_ready">Заказать такси</string>
+    <string name="add_adres">Добавить адрес</string>
+    <string name="add_time">Выбрать время</string>
+    <string name="start_adres_added">Нажмите, когда выберете откуда вас забрать</string>
 </resources>
