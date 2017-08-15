@@ -4,73 +4,69 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.webkit.GeolocationPermissions;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.widget.TextView;
 
-import com.apptrust.wingtaxi.JSInterfaces.AdresTextViewJSInterface;
 import com.apptrust.wingtaxi.JSInterfaces.GPSJavaScriptInterface;
+import com.apptrust.wingtaxi.fragments.MainFragment;
 
+/**
+ * Основная активити приложения
+ * @author RareScrap
+ */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    /** Номер телефона пользователя */
     public static String phoneNumber;
 
-    public WebView webView;
-
-    public TextView textView;
-
+    /**
+     * Заполняет UI и инициализирует компоненты активити: NavDraver, Draverlayout. После иницализации
+     * отображает первый фрагмент - {@link MainFragment}. Если приложение запускается впервые
+     * (когда номер телефона не указан) - вызывается {@link LoginActivity}.
+     * @param savedInstanceState Сохраненное состояние фрагмента. Null, если фрагмент запущен впервые.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // TODO: Загружать номер телефоа из SharedPreferences
+
+        // Тестовый сценарий
         //phoneNumber = "111";
+
+        // Проверка на наличие номера
         if (phoneNumber == null || phoneNumber.isEmpty()) {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            startActivity(intent);
+            startActivity(intent); // Показать активити логина
         } else {
+            // Запуск инициализация MainActivity
             setContentView(R.layout.activity_main);
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
 
+            // Инициализация контейнера бокового меню
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                     this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
             drawer.setDrawerListener(toggle);
             toggle.syncState();
 
+            // Инициализация содержимого бокового меню
             NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this);
 
-            textView = (TextView) findViewById(R.id.textView);
-
-            webView = (WebView) findViewById(R.id.webView);
-            WebSettings webSettings = webView.getSettings();
-            webSettings.setJavaScriptEnabled(true);
-            webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
-            webSettings.setGeolocationEnabled(true);
-
-            webView.setWebChromeClient(new WebChromeClient() {
-                public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-                    callback.invoke(origin, true, false);
-                }
-            });
-
-            //
-            GPSJavaScriptInterface gpsJavaScriptInterface = new GPSJavaScriptInterface(this);
-            AdresTextViewJSInterface adresTextViewJSInterface = new AdresTextViewJSInterface(textView);
-            webView.addJavascriptInterface(gpsJavaScriptInterface, "gpsJavaScriptInterface");
-            webView.addJavascriptInterface(adresTextViewJSInterface, "adresTextViewJSInterface");
-
-            webView.clearCache(true);
-            webView.loadUrl("http://romhacking.pw/test_map4/map.html");
+            // Показываем первый фрагмент
+            MainFragment mainFragment = MainFragment.newInstance();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, mainFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
         }
     }
 
@@ -99,6 +95,7 @@ public class MainActivity extends AppCompatActivity
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
+                    // Строка для остановки отладчика
                     int a;
 
                 } else {
@@ -112,6 +109,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Скрывает видимый на экране{@link NavigationView}, если была нажата кнопка back
+     */
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -122,18 +122,23 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Обработка выбранных элементов меню из {@link NavigationView}
+     * @param item
+     * @return
+     */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
         if (id == R.id.nav_map) {
             // Handle the camera action
         } else if (id == R.id.nav_history) {
 
         }
 
+        // Закрыть после выбора элемента
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
