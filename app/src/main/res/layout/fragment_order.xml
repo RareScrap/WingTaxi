@@ -35,7 +35,7 @@
             android:layout_columnWeight="1">
 
             <ImageButton
-                android:id="@+id/imageButton2"
+                android:id="@+id/addAdresImageButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -45,7 +45,7 @@
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_above="@+id/imageButton2"
+                android:layout_above="@+id/addAdresImageButton"
                 android:layout_centerHorizontal="true"
                 android:text="@string/add_adres"/>
         </RelativeLayout>

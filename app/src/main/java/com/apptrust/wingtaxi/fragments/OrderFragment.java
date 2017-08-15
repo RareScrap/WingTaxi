@@ -29,6 +29,8 @@ public class OrderFragment extends Fragment {
     private RecyclerView mRecyclerView;
     /** Адаптер списка */
     private TaxiListAdapter mTaxiListAdapter;
+    /** Кнопка добавления дополнительного адреса */
+    private ImageButton addAdresImageButton;
 
     /**
      * Используйте этот фабричный метод для создания новых экземпляров
@@ -76,16 +78,19 @@ public class OrderFragment extends Fragment {
 
         // Инициализация UI списка
         mRecyclerView = (RecyclerView) returnedView.findViewById(R.id.adresRecyclerView);
+        addAdresImageButton = (ImageButton) returnedView.findViewById(R.id.addAdresImageButton);
         mTaxiListAdapter = new TaxiListAdapter(adreses, deleteClickListener);
         mRecyclerView.setAdapter(mTaxiListAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        // Устаовка слушателя на кнопки
+        addAdresImageButton.setOnClickListener(addAdresClickListener);
 
         // Вернуть UI фрагмента
         return returnedView;
     }
 
-    //private RecyclerView.Adapter recyclerViewAdapter = new RecyclerView.Adapter()
-    private class TaxiListAdapter extends RecyclerView.Adapter<TaxiListAdapter.ViewHolder> {
+    public class TaxiListAdapter extends RecyclerView.Adapter<TaxiListAdapter.ViewHolder> {
         /**
          * Список адресов, которые выбрал пользователь
          */
@@ -201,6 +206,19 @@ public class OrderFragment extends Fragment {
             int pos = viewHolder.getLayoutPosition();
             mTaxiListAdapter.adreses.remove(pos);
             mTaxiListAdapter.notifyDataSetChanged();
+        }
+    };
+
+    View.OnClickListener addAdresClickListener = new View.OnClickListener() {
+        /**
+         * Called when a view has been clicked.
+         *
+         * @param v The view that was clicked.
+         */
+        @Override
+        public void onClick(View v) {
+            AddAdresDialogFragment addAdresDialogFragment = AddAdresDialogFragment.newInstance(mTaxiListAdapter);
+            addAdresDialogFragment.show(getFragmentManager(), "line width dialog");
         }
     };
 }

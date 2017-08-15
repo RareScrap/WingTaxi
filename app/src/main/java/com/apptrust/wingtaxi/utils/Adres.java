@@ -14,6 +14,12 @@ public class Adres {
         this.latitude = latitude;
     }
 
+    public Adres(double longitude, double latitude, String textAdres) {
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.textAdres = textAdres;
+    }
+
     @Override
     public String toString() {
         return textAdres;
