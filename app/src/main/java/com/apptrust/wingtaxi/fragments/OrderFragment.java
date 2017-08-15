@@ -31,6 +31,10 @@ public class OrderFragment extends Fragment {
     private TaxiListAdapter mTaxiListAdapter;
     /** Кнопка добавления дополнительного адреса */
     private ImageButton addAdresImageButton;
+    /** Кнопка выбора времени подачи такси */
+    private ImageButton timeSetImageButton;
+    /** {@link TextView} над кнопкой "выбрать время" */
+    private TextView timeTextView;
 
     /**
      * Используйте этот фабричный метод для создания новых экземпляров
@@ -79,12 +83,15 @@ public class OrderFragment extends Fragment {
         // Инициализация UI списка
         mRecyclerView = (RecyclerView) returnedView.findViewById(R.id.adresRecyclerView);
         addAdresImageButton = (ImageButton) returnedView.findViewById(R.id.addAdresImageButton);
+        timeSetImageButton = (ImageButton) returnedView.findViewById(R.id.timeSetImageButton);
+        timeTextView = (TextView) returnedView.findViewById(R.id.timeTextView);
         mTaxiListAdapter = new TaxiListAdapter(adreses, deleteClickListener);
         mRecyclerView.setAdapter(mTaxiListAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         // Устаовка слушателя на кнопки
         addAdresImageButton.setOnClickListener(addAdresClickListener);
+        timeSetImageButton.setOnClickListener(timeSetClickListener);
 
         // Вернуть UI фрагмента
         return returnedView;
@@ -219,6 +226,19 @@ public class OrderFragment extends Fragment {
         public void onClick(View v) {
             AddAdresDialogFragment addAdresDialogFragment = AddAdresDialogFragment.newInstance(mTaxiListAdapter);
             addAdresDialogFragment.show(getFragmentManager(), "line width dialog");
+        }
+    };
+
+    View.OnClickListener timeSetClickListener = new View.OnClickListener() {
+        /**
+         * Called when a view has been clicked.
+         *
+         * @param v The view that was clicked.
+         */
+        @Override
+        public void onClick(View v) {
+            TimePickerDialogFragment timePickerDialogFragment = TimePickerDialogFragment.newInstance(timeTextView);
+            timePickerDialogFragment.show(getFragmentManager(), "l2312");
         }
     };
 }
