@@ -14,8 +14,8 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.apptrust.wingtaxi.JSInterfaces.AdresTextViewJSInterface;
-import com.apptrust.wingtaxi.JSInterfaces.GPSJavaScriptInterface;
+import com.apptrust.wingtaxi.JSInterfaces.UpdateDataJSInterface;
+import com.apptrust.wingtaxi.JSInterfaces.GPSRequireJSInterface;
 import com.apptrust.wingtaxi.R;
 import com.apptrust.wingtaxi.utils.Adres;
 
@@ -23,7 +23,8 @@ import com.apptrust.wingtaxi.utils.Adres;
  * Основной фрагмент приложения. Представляет собой {@link WebView} с яндекс картой лайаутом
  * кнопки подтверждения адреса и строки адреса
  */
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements
+        UpdateDataJSInterface.JSRequestUpdateData {
     /** Котейнер Yandex карты */
     public WebView webView;
     /** Текстовое представление адреса, который пользователь выбирает на карте*/
@@ -89,10 +90,11 @@ public class MainFragment extends Fragment {
         });
 
         // Инициализация JS-интерфейсов
-        GPSJavaScriptInterface gpsJavaScriptInterface = new GPSJavaScriptInterface(getActivity());
-        AdresTextViewJSInterface adresTextViewJSInterface = new AdresTextViewJSInterface(textView);
-        webView.addJavascriptInterface(gpsJavaScriptInterface, "gpsJavaScriptInterface");
-        webView.addJavascriptInterface(adresTextViewJSInterface, "adresTextViewJSInterface");
+        GPSRequireJSInterface gpsRequireJSInterface = new GPSRequireJSInterface(getActivity());
+        UpdateDataJSInterface updateDataJSInterface = new UpdateDataJSInterface(this);
+        // TODO: Заменить название интерфейса в JS
+        webView.addJavascriptInterface(gpsRequireJSInterface, "gpsJavaScriptInterface");
+        webView.addJavascriptInterface(updateDataJSInterface, "adresTextViewJSInterface");
 
         // Последние приготолеия
         webView.clearCache(true);
@@ -125,4 +127,16 @@ public class MainFragment extends Fragment {
             ( (ViewGroup) getActivity().findViewById(R.id.fragment_container) ).removeAllViews();
         }
     };
+
+    @Override
+    public void onJSRequestUpdateAdres(String newAdres) {
+        final String adres = newAdres;
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                textView.setText(adres);
+            }
+        });
+        MainFragment.firstAdres.textAdres = adres;
+    }
 }

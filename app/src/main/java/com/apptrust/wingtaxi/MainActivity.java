@@ -12,7 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-import com.apptrust.wingtaxi.JSInterfaces.GPSJavaScriptInterface;
+import com.apptrust.wingtaxi.JSInterfaces.GPSRequireJSInterface;
 import com.apptrust.wingtaxi.fragments.MainFragment;
 
 /**
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
-            case GPSJavaScriptInterface.ACCESS_FINE_LOCATION_PERMISSION_REQUEST_CODE: {
+            case GPSRequireJSInterface.ACCESS_FINE_LOCATION_PERMISSION_REQUEST_CODE: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {

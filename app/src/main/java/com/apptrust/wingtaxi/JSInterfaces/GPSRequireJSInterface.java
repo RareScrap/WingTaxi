@@ -3,19 +3,15 @@ package com.apptrust.wingtaxi.JSInterfaces;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
 
 import com.apptrust.wingtaxi.R;
+import com.apptrust.wingtaxi.fragments.MainFragment;
+import com.apptrust.wingtaxi.utils.Adres;
 
 import im.delight.android.location.SimpleLocation;
 
@@ -23,12 +19,12 @@ import im.delight.android.location.SimpleLocation;
  * Created by rares on 08.08.2017.
  */
 
-public class GPSJavaScriptInterface {
+public class GPSRequireJSInterface {
     // TODO: Или лучше AppCompatActivity?
     private Activity activity;
     public static final int ACCESS_FINE_LOCATION_PERMISSION_REQUEST_CODE = 1;
 
-    public GPSJavaScriptInterface(Activity activiy) {
+    public GPSRequireJSInterface(Activity activiy) {
         this.activity = activiy;
     }
 
@@ -80,6 +76,9 @@ public class GPSJavaScriptInterface {
             if (location != null) {
                 double longitude = location.getLongitude();
                 double latitude = location.getLatitude();
+
+                MainFragment.firstAdres = new Adres(longitude, latitude);
+
                 Toast.makeText(activity, String.valueOf(longitude) + "_" + String.valueOf(latitude), Toast.LENGTH_SHORT).show();
                 double[] coords = {longitude, latitude};
                 return coords;
