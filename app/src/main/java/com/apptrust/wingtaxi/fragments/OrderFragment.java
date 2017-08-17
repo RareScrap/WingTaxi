@@ -209,7 +209,8 @@ public class OrderFragment extends Fragment {
          */
         @Override
         public void onClick(View view) {
-            TaxiListAdapter.ViewHolder viewHolder = (TaxiListAdapter.ViewHolder) mRecyclerView.getChildViewHolder((View) view.getParent());
+            // TODO: Убрать цепучку getParent
+            TaxiListAdapter.ViewHolder viewHolder = (TaxiListAdapter.ViewHolder) mRecyclerView.getChildViewHolder((View) view.getParent().getParent());
             int pos = viewHolder.getLayoutPosition();
             mTaxiListAdapter.adreses.remove(pos);
             mTaxiListAdapter.notifyDataSetChanged();
