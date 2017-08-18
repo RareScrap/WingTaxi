@@ -1,21 +1,27 @@
 package com.apptrust.wingtaxi;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.view.PagerAdapter;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.apptrust.wingtaxi.utils.NonSwipeableViewPager;
 import com.github.vacxe.phonemask.*;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
 
@@ -24,6 +30,9 @@ import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
  * Created by rares on 01.08.2017.
  */
 public class LoginActivity extends AppCompatActivity {
+    private static final long MAP_CHECK_DELAY = 50;
+    private static final long MAP_CHECK_PERIOD = 20000;
+
     /** Кнопка "продолжить" */
     private Button button;
 
@@ -41,6 +50,8 @@ public class LoginActivity extends AppCompatActivity {
 
     /** Если true, то следующее нажатие Back закроет приложение */
     private boolean readyToStop = false;
+    /** Если true, то UI на основной активити готов к работе и можно его показать */
+    public static boolean mapReady = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -134,16 +145,41 @@ public class LoginActivity extends AppCompatActivity {
 
             // Тестовый сценарий
             if (viewPager.getCurrentItem() == 1) {
+                // Скрываем клавиатуру, т.к. она больше нам не понадобится
+                InputMethodManager inputMethodManager = (InputMethodManager) LoginActivity.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+                inputMethodManager.hideSoftInputFromWindow(LoginActivity.this.getCurrentFocus().getWindowToken(), 0);
+
+                // Проверяем введенный код
                 if (codeField.getText().toString().equals("666777")) {
+                    // Сохраняем номер телефона в главной активити
+                    // TODO: Сохранять в SharedPreferences
                     MainActivity.phoneNumber = "test";
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    intent.setFlags(intent.getFlags() | FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    startActivity(intent);
+
+                    // Проверяем загрузилась ли карта во фрагменте на основной активити
+                    if (!mapReady) {
+                        // Начинаем загрузку
+                        showDownloadDialog();
+                        return; // Действие закончено
+                    }
+                    else {
+                        // Карта успешно загрудена и мы можем отобразить основную активити
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        intent.setFlags(intent.getFlags() | FLAG_ACTIVITY_REORDER_TO_FRONT);
+                        startActivity(intent);
+                    }
                 } else {
-                    if (codeField.getText().toString().isEmpty())
+                    // Обработка неверных значений
+
+                    // Поле пусто
+                    if (codeField.getText().toString().isEmpty()) {
                         Toast.makeText(LoginActivity.this, R.string.no_auth_code, Toast.LENGTH_SHORT).show();
-                    else
+                        return;
+                    }
+                    // Код неверен
+                    else {
                         Toast.makeText(LoginActivity.this, R.string.incorrect_auth_code, Toast.LENGTH_LONG).show();
+                        return;
+                    }
                 }
             }
 
@@ -154,6 +190,22 @@ public class LoginActivity extends AppCompatActivity {
                 return;
         }
     };
+
+    /**
+     * Показываем диалог загрузки и запускаем метод, проверяющий карту на скачанность
+     * ({@link #downloadChecker(long, long)})
+     */
+    private void showDownloadDialog() {
+        // Строим и показываем диалог
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Пожалуйста, подождите");
+        builder.setView(R.layout.dialog_fragment_download);
+        builder.setCancelable(false);
+        builder.create().show();
+
+        // Начинаем отслеживать изменение флага загрузки
+        downloadChecker(MAP_CHECK_DELAY, MAP_CHECK_PERIOD);
+    }
 
     /**
      * Take care of popping the fragment back stack or finishing the activity
@@ -173,5 +225,30 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             viewPager.setCurrentItem(viewPager.getCurrentItem()-1, true);
         }
+    }
+
+    /**
+     * Проверяет, был ли изменен флаг {@link #mapReady} (приходит извне). Если он true, то запускает
+     * {@link MainActivity}.
+     * @param delay Промежуток между каждой проверкой (в миллисекундах)
+     * @param period Период, в течении которого выполняется проверка
+     */
+    private void downloadChecker(long delay, long period) {
+        final Timer timer = new Timer();
+        final TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                if (mapReady) {
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.setFlags(intent.getFlags() | FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    startActivity(intent);
+                    timer.cancel();
+                    timer.purge();
+                }
+            }
+
+            // TODO: Обработать ситуацию, когда карта так и не была готова
+        };
+        timer.schedule(timerTask, delay, period);
     }
 }

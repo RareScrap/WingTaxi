@@ -1,6 +1,7 @@
 package com.apptrust.wingtaxi.fragments;
 
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -14,8 +15,10 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.apptrust.wingtaxi.JSInterfaces.MapReadyJSInterface;
 import com.apptrust.wingtaxi.JSInterfaces.UpdateDataJSInterface;
 import com.apptrust.wingtaxi.JSInterfaces.GPSRequireJSInterface;
+import com.apptrust.wingtaxi.LoginActivity;
 import com.apptrust.wingtaxi.R;
 import com.apptrust.wingtaxi.utils.Adres;
 
@@ -24,7 +27,8 @@ import com.apptrust.wingtaxi.utils.Adres;
  * кнопки подтверждения адреса и строки адреса
  */
 public class MainFragment extends Fragment implements
-        UpdateDataJSInterface.JSRequestUpdateData {
+        UpdateDataJSInterface.JSRequestUpdateData,
+        MapReadyJSInterface.MapReady {
     /** Котейнер Yandex карты */
     public WebView webView;
     /** Текстовое представление адреса, который пользователь выбирает на карте*/
@@ -92,13 +96,15 @@ public class MainFragment extends Fragment implements
         // Инициализация JS-интерфейсов
         GPSRequireJSInterface gpsRequireJSInterface = new GPSRequireJSInterface(getActivity());
         UpdateDataJSInterface updateDataJSInterface = new UpdateDataJSInterface(this);
+        MapReadyJSInterface mapReadyJSInterface = new MapReadyJSInterface(this);
         // TODO: Заменить название интерфейса в JS
         webView.addJavascriptInterface(gpsRequireJSInterface, "gpsJavaScriptInterface");
         webView.addJavascriptInterface(updateDataJSInterface, "adresTextViewJSInterface");
+        webView.addJavascriptInterface(mapReadyJSInterface, "mapReadyJSInterface");
 
         // Последние приготолеия
         webView.clearCache(true);
-        webView.loadUrl("http://romhacking.pw/test_map4/map.html");
+        webView.loadUrl("http://romhacking.pw/test_map5/map.html");
 
         // Вернуть View фрагмента
         return returnedView;
@@ -138,5 +144,14 @@ public class MainFragment extends Fragment implements
             }
         });
         MainFragment.firstAdres.textAdres = adres;
+    }
+
+    @Override
+    public void onMapReady() {
+        // Для отладки диалога загрузки в LoginFragment
+        //SystemClock.sleep(15000);
+
+        // Сообщаем LoginActivity, что карта голова к запуску
+        LoginActivity.mapReady = true;
     }
 }
