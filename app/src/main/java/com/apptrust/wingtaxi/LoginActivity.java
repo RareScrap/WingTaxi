@@ -128,26 +128,30 @@ public class LoginActivity extends AppCompatActivity {
             // Отменяем готовность закрыть приложение
             readyToStop = false;
 
-            // Перелистываемся на следующее поле
-            viewPager.setCurrentItem(viewPager.getCurrentItem()+1, true);
-
-            if (codeField.getText().toString().isEmpty())
-                return;
-
+            // TODO: Добавить проверку валидности номера перед переходом к следующему полю
 
             //TODO Отправить введенный юзером код запрсом через ретрофит
 
-
             // Тестовый сценарий
-            if ((!codeField.getText().toString().isEmpty()) && codeField.getText().toString().equals("666777")) {
-                MainActivity.phoneNumber = "test";
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                intent.setFlags(intent.getFlags() | FLAG_ACTIVITY_REORDER_TO_FRONT);
-                startActivity(intent);
-            } else {
-                Toast.makeText(LoginActivity.this, "Неверный код", Toast.LENGTH_LONG).show();
+            if (viewPager.getCurrentItem() == 1) {
+                if (codeField.getText().toString().equals("666777")) {
+                    MainActivity.phoneNumber = "test";
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.setFlags(intent.getFlags() | FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    startActivity(intent);
+                } else {
+                    if (codeField.getText().toString().isEmpty())
+                        Toast.makeText(LoginActivity.this, R.string.no_auth_code, Toast.LENGTH_SHORT).show();
+                    else
+                        Toast.makeText(LoginActivity.this, R.string.incorrect_auth_code, Toast.LENGTH_LONG).show();
+                }
             }
 
+            // Перелистываемся на следующее поле
+            if (viewPager.getCurrentItem() != viewPager.getChildCount())
+                viewPager.setCurrentItem(viewPager.getCurrentItem()+1, true);
+            else
+                return;
         }
     };
 
