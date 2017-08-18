@@ -27,7 +27,7 @@
 
             <ImageView
                 android:id="@+id/button5"
-                android:layout_width="150dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:src="?android:attr/listChoiceIndicatorSingle"
@@ -35,7 +35,7 @@
         </FrameLayout>
 
         <FrameLayout
-            android:id="@+id/button4"
+            android:id="@+id/addedView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="fill"
