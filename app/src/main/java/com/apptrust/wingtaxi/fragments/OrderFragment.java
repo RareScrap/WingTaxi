@@ -186,6 +186,22 @@ public class OrderFragment extends Fragment {
             // Получение объекта FoodItem для заданной позиции ListView
             Adres adresItem = adreses.get(position);
 
+            // Обработка поведения View'хи при разных количествах элементов в списке
+            View topLine = holder.itemView.findViewById(R.id.top_line);
+            View bottomLine = holder.itemView.findViewById(R.id.bottom_line);
+            topLine.setVisibility(View.VISIBLE);
+            bottomLine.setVisibility(View.VISIBLE);
+            if (adreses.size() == position+1 && adreses.size() == 1) {
+                topLine.setVisibility(View.INVISIBLE);
+                bottomLine.setVisibility(View.INVISIBLE);
+            } else {
+                if (position == 0)
+                    topLine.setVisibility(View.INVISIBLE);
+                if (position == adreses.size()-1)
+                    bottomLine.setVisibility(View.INVISIBLE);
+            }
+
+
             // Назначения текста элементам GUI
             holder.adresTextView.setText(adresItem.textAdres);
         }
@@ -210,7 +226,7 @@ public class OrderFragment extends Fragment {
         @Override
         public void onClick(View view) {
             // TODO: Убрать цепучку getParent
-            TaxiListAdapter.ViewHolder viewHolder = (TaxiListAdapter.ViewHolder) mRecyclerView.getChildViewHolder((View) view.getParent().getParent());
+            TaxiListAdapter.ViewHolder viewHolder = (TaxiListAdapter.ViewHolder) mRecyclerView.getChildViewHolder((View) view.getParent().getParent().getParent());
             int pos = viewHolder.getLayoutPosition();
             mTaxiListAdapter.adreses.remove(pos);
             mTaxiListAdapter.notifyDataSetChanged();
