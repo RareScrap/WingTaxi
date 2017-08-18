@@ -12,4 +12,5 @@
     <string name="start_adres_added">Нажмите, когда выберете откуда вас забрать</string>
     <string name="add_adres_dialog">Введите адрес, который следует включить в маршрут поездки. Такси поедет по адресам в порядке их добавления в список</string>
     <string name="add_adres_hint">Введите адрес сюда</string>
+    <string name="ready_to_stop">Нажмите еще раз, что закрыть приложение</string>
 </resources>

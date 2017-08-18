@@ -15,6 +15,8 @@ import android.view.MenuItem;
 import com.apptrust.wingtaxi.JSInterfaces.GPSRequireJSInterface;
 import com.apptrust.wingtaxi.fragments.MainFragment;
 
+import static android.content.Intent.FLAG_ACTIVITY_NO_HISTORY;
+
 /**
  * Основная активити приложения
  * @author RareScrap
@@ -40,33 +42,36 @@ public class MainActivity extends AppCompatActivity
         // Тестовый сценарий
         //phoneNumber = "111";
 
+
+        // Запуск инициализация MainActivity
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // Инициализация контейнера бокового меню
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        // Инициализация содержимого бокового меню
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        // Показываем первый фрагмент
+        MainFragment mainFragment = MainFragment.newInstance();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, mainFragment);
+        //transaction.addToBackStack(null);
+        transaction.commit();
+
+
         // Проверка на наличие номера
         if (phoneNumber == null || phoneNumber.isEmpty()) {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            intent.setFlags(intent.getFlags() | FLAG_ACTIVITY_NO_HISTORY);
             startActivity(intent); // Показать активити логина
-        } else {
-            // Запуск инициализация MainActivity
-            setContentView(R.layout.activity_main);
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
-
-            // Инициализация контейнера бокового меню
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-            drawer.setDrawerListener(toggle);
-            toggle.syncState();
-
-            // Инициализация содержимого бокового меню
-            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-            navigationView.setNavigationItemSelectedListener(this);
-
-            // Показываем первый фрагмент
-            MainFragment mainFragment = MainFragment.newInstance();
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container, mainFragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
         }
     }
 
@@ -115,7 +120,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
+        if (drawer != null && drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();

@@ -17,6 +17,8 @@ import android.widget.Toast;
 import com.apptrust.wingtaxi.utils.NonSwipeableViewPager;
 import com.github.vacxe.phonemask.*;
 
+import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
+
 
 /**
  * Created by rares on 01.08.2017.
@@ -36,6 +38,9 @@ public class LoginActivity extends AppCompatActivity {
     private EditText phoneField;
     /** Поле для ввода SMS кода */
     private EditText codeField;
+
+    /** Если true, то следующее нажатие Back закроет приложение */
+    private boolean readyToStop = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -120,6 +125,10 @@ public class LoginActivity extends AppCompatActivity {
          */
         @Override
         public void onClick(View v) {
+            // Отменяем готовность закрыть приложение
+            readyToStop = false;
+
+            // Перелистываемся на следующее поле
             viewPager.setCurrentItem(viewPager.getCurrentItem()+1, true);
 
             if (codeField.getText().toString().isEmpty())
@@ -133,6 +142,7 @@ public class LoginActivity extends AppCompatActivity {
             if ((!codeField.getText().toString().isEmpty()) && codeField.getText().toString().equals("666777")) {
                 MainActivity.phoneNumber = "test";
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                intent.setFlags(intent.getFlags() | FLAG_ACTIVITY_REORDER_TO_FRONT);
                 startActivity(intent);
             } else {
                 Toast.makeText(LoginActivity.this, "Неверный код", Toast.LENGTH_LONG).show();
@@ -147,11 +157,17 @@ public class LoginActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-        if (viewPager.getCurrentItem() == 2) {
-            super.onBackPressed();
-            return;
+        if (viewPager.getCurrentItem() == 0) {
+            if (readyToStop) {
+                // Выходим из приложения
+                finishAffinity();
+                return;
+            } else {
+                Toast.makeText(this, R.string.ready_to_stop, Toast.LENGTH_SHORT).show();
+                readyToStop = true;
+            }
+        } else {
+            viewPager.setCurrentItem(viewPager.getCurrentItem()-1, true);
         }
-
-        viewPager.setCurrentItem(viewPager.getCurrentItem()-1, true);
     }
 }
