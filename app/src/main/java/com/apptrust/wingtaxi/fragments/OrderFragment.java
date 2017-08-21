@@ -3,11 +3,13 @@ package com.apptrust.wingtaxi.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -35,6 +37,8 @@ public class OrderFragment extends Fragment {
     private ImageButton timeSetImageButton;
     /** {@link TextView} над кнопкой "выбрать время" */
     private TextView timeTextView;
+    /** Кнопка перехода к следующему фрагменту */
+    private Button nextButton;
 
     /**
      * Используйте этот фабричный метод для создания новых экземпляров
@@ -84,6 +88,7 @@ public class OrderFragment extends Fragment {
         mRecyclerView = (RecyclerView) returnedView.findViewById(R.id.adresRecyclerView);
         addAdresImageButton = (ImageButton) returnedView.findViewById(R.id.addAdresImageButton);
         timeSetImageButton = (ImageButton) returnedView.findViewById(R.id.timeSetImageButton);
+        nextButton = (Button) returnedView.findViewById(R.id.next_button);
         timeTextView = (TextView) returnedView.findViewById(R.id.timeTextView);
         mTaxiListAdapter = new TaxiListAdapter(adreses, deleteClickListener);
         mRecyclerView.setAdapter(mTaxiListAdapter);
@@ -92,6 +97,8 @@ public class OrderFragment extends Fragment {
         // Устаовка слушателя на кнопки
         addAdresImageButton.setOnClickListener(addAdresClickListener);
         timeSetImageButton.setOnClickListener(timeSetClickListener);
+        nextButton.setOnClickListener(nextClickListener);
+
 
         // Вернуть UI фрагмента
         return returnedView;
@@ -256,6 +263,30 @@ public class OrderFragment extends Fragment {
         public void onClick(View v) {
             TimePickerDialogFragment timePickerDialogFragment = TimePickerDialogFragment.newInstance(timeTextView);
             timePickerDialogFragment.show(getFragmentManager(), "l2312");
+        }
+    };
+
+    /**
+     * Слушатель для кнопки перехода к фрагменту {@link SummaryFragment}
+     */
+    View.OnClickListener nextClickListener = new View.OnClickListener() {
+        /**
+         * Откывает фрагмента {@link SummaryFragment} при клике
+         * @param v {@link View} кнопки, по которой был сделан клик
+         */
+        @Override
+        public void onClick(View v) {
+            FragmentTransaction fTrans = getFragmentManager().beginTransaction();
+
+            // Иницилазация нового фрагмета
+            SummaryFragment summaryFragment = SummaryFragment.newInstance();
+            fTrans.addToBackStack(null);
+            fTrans.replace(R.id.fragment_container, summaryFragment);
+            fTrans.commit();
+
+            // Очистка ненужных более View
+            // TODO: При первом запуске приложения без этой строки можно обойтись, но после изменения currentMode, без этой строки не стирается прдыдущий view
+            ( (ViewGroup) getActivity().findViewById(R.id.fragment_container) ).removeAllViews();
         }
     };
 }

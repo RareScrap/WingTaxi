@@ -4,7 +4,7 @@
     android:layout_width="match_parent" android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/next_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -24,7 +24,7 @@
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_above="@+id/button3"
+        android:layout_above="@+id/next_button"
         android:layout_below="@+id/adresRecyclerView"
         android:columnCount="2"
         android:rowCount="1">

@@ -16,4 +16,5 @@
     <string name="incorrect_auth_code">Неверный код</string>
     <string name="no_auth_code">Вы не ввели код</string>
     <string name="download_dialog_text">Загружаем карту</string>
+    <string name="ok_button">ОК</string>
 </resources>
