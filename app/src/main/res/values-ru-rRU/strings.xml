@@ -17,4 +17,6 @@
     <string name="no_auth_code">Вы не ввели код</string>
     <string name="download_dialog_text">Загружаем карту</string>
     <string name="ok_button">ОК</string>
+    <string name="following_addresses">Поездка по адресам:</string>
+    <string name="cash">К оплате: %1$.2f \u20bd</string>
 </resources>

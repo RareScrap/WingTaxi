@@ -9,6 +9,7 @@ import android.webkit.JavascriptInterface;
 public class UpdateDataJSInterface {
     public interface JSRequestUpdateData {
         void onJSRequestUpdateAdres(String newAdres);
+        void onJSRequestUpdateRouteLength(float length);
     }
 
     /** Объект реализации интерфейса. Приходит из вне */
@@ -26,5 +27,10 @@ public class UpdateDataJSInterface {
     @JavascriptInterface
     public void updateAdresView(String newAdres) {
         jsRequestChanges.onJSRequestUpdateAdres(newAdres);
+    }
+
+    @JavascriptInterface
+    public void updateRouteLength(float length) {
+        jsRequestChanges.onJSRequestUpdateRouteLength(length);
     }
 }
