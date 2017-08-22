@@ -1,7 +1,6 @@
 package com.apptrust.wingtaxi.fragments;
 
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -23,8 +22,10 @@ import com.apptrust.wingtaxi.R;
 import com.apptrust.wingtaxi.utils.Adres;
 
 /**
- * Основной фрагмент приложения. Представляет собой {@link WebView} с яндекс картой лайаутом
- * кнопки подтверждения адреса и строки адреса
+ * Основной фрагмент приложения. Представляет собой {@link WebView} с яндекс картой, лайаутом
+ * кнопки подтверждения адреса и строки адреса. Этот фрагмент вызывается в самом начале приложения
+ * и может быть вызван в любом другом месте, когда требуется получить от пользователя новое место
+ * на карте - например, в {@link OrderFragment} при выборе дополнительного адреса
  */
 public class MainFragment extends Fragment implements
         UpdateDataJSInterface.JSRequestUpdateData,
@@ -35,16 +36,22 @@ public class MainFragment extends Fragment implements
     public TextView textView;
     /** Кнопка подтверждения выбора начального адреса */
     private Button mButton;
+    /** Адрес, который выбрал пользователь*/
+    private Adres selectedAddress;
 
-    public static Adres firstAdres;
+    /** Ссылка на фрагмент {@link OrderFragment}. Если null, то {@link #buttonClickListener}
+     * создаст новый фрагмент {@link OrderFragment}. Если != null, то {@link #selectedAddress}
+     * Добавляется в {@link OrderFragment#adreses}, вместо создания нового фрагмента*/
+    private OrderFragment orderFragmentLink;
 
     /**
      * Используйте этот фабричный метод для создания новых экземпляров
      * этого фрагмента с использованием предоставленных параментров
      * @return Новый объект фрагмента {@link MainFragment}.
      */
-    public static MainFragment newInstance() {
+    public static MainFragment newInstance(OrderFragment orderFragmentLink) {
         MainFragment fragment = new MainFragment();
+        fragment.orderFragmentLink = orderFragmentLink;
         return fragment;
     }
 
@@ -99,12 +106,12 @@ public class MainFragment extends Fragment implements
         MapReadyJSInterface mapReadyJSInterface = new MapReadyJSInterface(this);
         // TODO: Заменить название интерфейса в JS
         webView.addJavascriptInterface(gpsRequireJSInterface, "gpsJavaScriptInterface");
-        webView.addJavascriptInterface(updateDataJSInterface, "adresTextViewJSInterface");
+        webView.addJavascriptInterface(updateDataJSInterface, "updateDataJSInterface");
         webView.addJavascriptInterface(mapReadyJSInterface, "mapReadyJSInterface");
 
         // Последние приготолеия
         webView.clearCache(true);
-        webView.loadUrl("http://romhacking.pw/test_map5/map.html");
+        webView.loadUrl("http://romhacking.pw/test_map/map.html");
 
         // Вернуть View фрагмента
         return returnedView;
@@ -120,31 +127,27 @@ public class MainFragment extends Fragment implements
          */
         @Override
         public void onClick(View v) {
-            FragmentTransaction fTrans = getFragmentManager().beginTransaction();
+            if (orderFragmentLink != null) {
+                // Добавляем адрес в список
+                orderFragmentLink.adreses.add(selectedAddress);
 
-            // Иницилазация нового фрагмета
-            OrderFragment orderFragment = OrderFragment.newInstance(firstAdres);
-            fTrans.addToBackStack(null);
-            fTrans.replace(R.id.fragment_container, orderFragment);
-            fTrans.commit();
+                // Вовзращаемся назад
+                getFragmentManager().popBackStackImmediate();
+            } else {
+                FragmentTransaction fTrans = getFragmentManager().beginTransaction();
 
-            // Очистка ненужных более View
-            // TODO: При первом запуске приложения без этой строки можно обойтись, но после изменения currentMode, без этой строки не стирается прдыдущий view
-            ( (ViewGroup) getActivity().findViewById(R.id.fragment_container) ).removeAllViews();
+                // Иницилазация нового фрагмета
+                OrderFragment orderFragment = OrderFragment.newInstance(selectedAddress);
+                fTrans.addToBackStack(null);
+                fTrans.replace(R.id.fragment_container, orderFragment);
+                fTrans.commit();
+
+                // Очистка ненужных более View
+                // TODO: При первом запуске приложения без этой строки можно обойтись, но после изменения currentMode, без этой строки не стирается прдыдущий view
+                ( (ViewGroup) getActivity().findViewById(R.id.fragment_container) ).removeAllViews();
+            }
         }
     };
-
-    @Override
-    public void onJSRequestUpdateAdres(String newAdres) {
-        final String adres = newAdres;
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                textView.setText(adres);
-            }
-        });
-        MainFragment.firstAdres.textAdres = adres;
-    }
 
     @Override
     public void onMapReady() {
@@ -153,5 +156,21 @@ public class MainFragment extends Fragment implements
 
         // Сообщаем LoginActivity, что карта голова к запуску
         LoginActivity.mapReady = true;
+    }
+
+    @Override
+    public void onJSRequestUpdateAdres(double longitude, double latitude, final String address) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                textView.setText(address);
+            }
+        });
+        this.selectedAddress = new Adres(longitude, latitude, address);
+    }
+
+    @Override
+    public void onJSRequestUpdateRouteLength(float length) {
+        // Нас не интересует маршрут. Ничего не делаем
     }
 }

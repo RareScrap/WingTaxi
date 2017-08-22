@@ -26,7 +26,7 @@ import java.util.ArrayList;
  */
 public class OrderFragment extends Fragment {
     /** Список адресов, которые выбрал пользователь */
-    public static ArrayList<Adres> adreses = new ArrayList<>();
+    public ArrayList<Adres> adreses = new ArrayList<>();
     /** UI списка */
     private RecyclerView mRecyclerView;
     /** Адаптер списка */
@@ -49,10 +49,8 @@ public class OrderFragment extends Fragment {
     public static OrderFragment newInstance(Adres firstAdres) {
         OrderFragment fragment = new OrderFragment();
 
-        // Очистка старых данных адреса
-        adreses.clear();
         // Добавляет первый адрес в список адресов
-        adreses.add(firstAdres);
+        fragment.adreses.add(firstAdres);
 
         // Вернуть новый экземпляр фрагмента
         return fragment;
@@ -248,8 +246,21 @@ public class OrderFragment extends Fragment {
          */
         @Override
         public void onClick(View v) {
-            AddAdresDialogFragment addAdresDialogFragment = AddAdresDialogFragment.newInstance(mTaxiListAdapter);
-            addAdresDialogFragment.show(getFragmentManager(), "line width dialog");
+            FragmentTransaction fTrans = getFragmentManager().beginTransaction();
+
+            // Иницилазация нового фрагмета
+            MainFragment mainFragment = MainFragment.newInstance(OrderFragment.this);
+            fTrans.addToBackStack(null);
+            fTrans.replace(R.id.fragment_container, mainFragment);
+            fTrans.commit();
+
+            // Очистка ненужных более View
+            // TODO: При первом запуске приложения без этой строки можно обойтись, но после изменения currentMode, без этой строки не стирается прдыдущий view
+            ( (ViewGroup) getActivity().findViewById(R.id.fragment_container) ).removeAllViews();
+
+
+            /*AddAdresDialogFragment addAdresDialogFragment = AddAdresDialogFragment.newInstance(mTaxiListAdapter);
+            addAdresDialogFragment.show(getFragmentManager(), "line width dialog");*/
         }
     };
 

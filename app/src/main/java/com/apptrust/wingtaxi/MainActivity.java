@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         // Показываем первый фрагмент
-        MainFragment mainFragment = MainFragment.newInstance();
+        MainFragment mainFragment = MainFragment.newInstance(null);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, mainFragment);
         //transaction.addToBackStack(null);
