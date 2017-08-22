@@ -20,7 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/item_margin"
-                android:text="@string/min_tariff"/>
+                tools:text="@string/min_tariff"/>
 
             <TextView
                 android:id="@+id/adresses"
@@ -35,21 +35,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/item_margin"
-                android:text="@string/calculation"/>
+                android:text="@string/calculation_in_progress"
+                />
 
             <TextView
                 android:id="@+id/time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/item_margin"
-                android:text="@string/time"/>
+                tools:text="@string/time_hm"/>
 
             <TextView
                 android:id="@+id/price"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/item_margin"
-                android:text="@string/price"/>
+                tools:text="@string/price"/>
         </LinearLayout>
     </ScrollView>
 

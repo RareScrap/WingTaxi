@@ -24,8 +24,11 @@
     <string name="trip_settings">Настройки поездки</string>
     <string name="check_order">Подтвердите вашу поездку</string>
     <string name="check_order_hint">Проверьте, все ли верно</string>
-    <string name="min_tariff">Минималка: %1$d км. Стоимость минималки - %2$d \u20bd. Каждый последующий километр - +%3$d \u20bd.</string>
-    <string name="calculation">Всего %1$.2f км. Из них минималка %2$d + дополнительные %3$.2f км (%4$.2f).</string>
-    <string name="time">Примерное время поездки: %1$d</string>
+    <string name="min_tariff">Минималка: %1$d км. Стоимость минималки - %2$.2f \u20bd. Каждый последующий километр - +%3$.2f \u20bd.</string>
+    <string name="calculation">Всего %1$f км. Из них минималка %2$d км + дополнительные %3$f км (%4$.2f \u20bd).</string>
+    <string name="calculation_in_progress">Путь: вычисляем…</string>
+    <string name="time_m">Примерное время поездки: %1$d мин.</string>
+    <string name="time_h">Примерное время поездки: %1$d ч.</string>
+    <string name="time_hm">Примерное время поездки: %1$d ч %2$d мин.</string>
     <string name="price">Итого к оплате: %1$.2f \u20bd</string>
 </resources>
