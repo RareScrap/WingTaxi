@@ -8,29 +8,28 @@ import android.webkit.JavascriptInterface;
  */
 public class UpdateDataJSInterface {
     public interface JSRequestUpdateData {
-        void onJSRequestUpdateAdres(String newAdres);
+        void onJSRequestUpdateAdres(double longitude, double latitude, String address);
         void onJSRequestUpdateRouteLength(float length);
     }
 
     /** Объект реализации интерфейса. Приходит из вне */
-    public JSRequestUpdateData jsRequestChanges;
+    public JSRequestUpdateData jsDataUpdater;
 
     /**
      * Конструктор, инициализирующий свои поля
      * @param jsRequestChanges Объект, реализующий интерфейсы {@link JSRequestUpdateData}
      */
     public UpdateDataJSInterface(JSRequestUpdateData jsRequestChanges) {
-        this.jsRequestChanges = jsRequestChanges;
+        this.jsDataUpdater = jsRequestChanges;
     }
 
-    // TODO: Изменить название метода
     @JavascriptInterface
-    public void updateAdresView(String newAdres) {
-        jsRequestChanges.onJSRequestUpdateAdres(newAdres);
+    public void updateAddress(double longitude, double latitude, String address) {
+        jsDataUpdater.onJSRequestUpdateAdres(longitude, latitude, address);
     }
 
     @JavascriptInterface
     public void updateRouteLength(float length) {
-        jsRequestChanges.onJSRequestUpdateRouteLength(length);
+        jsDataUpdater.onJSRequestUpdateRouteLength(length);
     }
 }
