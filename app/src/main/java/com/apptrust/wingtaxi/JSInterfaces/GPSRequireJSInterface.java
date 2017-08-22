@@ -77,8 +77,6 @@ public class GPSRequireJSInterface {
                 double longitude = location.getLongitude();
                 double latitude = location.getLatitude();
 
-                MainFragment.firstAdres = new Adres(longitude, latitude);
-
                 Toast.makeText(activity, String.valueOf(longitude) + "_" + String.valueOf(latitude), Toast.LENGTH_SHORT).show();
                 double[] coords = {longitude, latitude};
                 return coords;
