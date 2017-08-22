@@ -52,6 +52,7 @@ public class LoginActivity extends AppCompatActivity {
     private boolean readyToStop = false;
     /** Если true, то UI на основной активити готов к работе и можно его показать */
     public static boolean mapReady = false;
+    public static boolean dataReady = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -238,7 +239,7 @@ public class LoginActivity extends AppCompatActivity {
         final TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                if (mapReady) {
+                if (mapReady && dataReady) {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.setFlags(intent.getFlags() | FLAG_ACTIVITY_REORDER_TO_FRONT);
                     startActivity(intent);

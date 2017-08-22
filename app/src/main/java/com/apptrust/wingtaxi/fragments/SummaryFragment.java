@@ -13,6 +13,7 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.apptrust.wingtaxi.JSInterfaces.SendDataJSInterface;
 import com.apptrust.wingtaxi.JSInterfaces.UpdateDataJSInterface;
 import com.apptrust.wingtaxi.MainActivity;
 import com.apptrust.wingtaxi.R;
@@ -24,7 +25,8 @@ import java.util.ArrayList;
  * A simple {@link Fragment} subclass.
  */
 public class SummaryFragment extends Fragment implements
-        UpdateDataJSInterface.JSRequestUpdateData {
+        UpdateDataJSInterface.JSRequestUpdateData,
+        SendDataJSInterface.JSRequestData {
     /** Адреса, которые будут переданы карте маршрутов */
     private ArrayList<Adres> adresses;
 
@@ -63,6 +65,14 @@ public class SummaryFragment extends Fragment implements
         webView = (WebView) returnedView.findViewById(R.id.webView);
         ok_button = (Button) returnedView.findViewById(R.id.ok_button);
 
+        // Назначение теста элементам UI
+        minTextView.setText(getResources().getString(
+                R.string.min_tariff,
+                MainActivity.dataProvider.minTariffKm,
+                MainActivity.dataProvider.minTariffPrice,
+                MainActivity.dataProvider.additionalPricePerKm
+        ));
+
         // Названичение текста actionBar'у
         ActionBar ab = ((MainActivity) this.getActivity()).getSupportActionBar();
         ab.setTitle(R.string.check_order); // Вывести в титульую строку название блюда
@@ -83,12 +93,14 @@ public class SummaryFragment extends Fragment implements
 
         // Инициализация JS-интерфейсов
         UpdateDataJSInterface updateDataJSInterface = new UpdateDataJSInterface(this);
+        SendDataJSInterface sendDataJSInterface = new SendDataJSInterface(this);
         // TODO: Заменить название интерфейса в JS
         webView.addJavascriptInterface(updateDataJSInterface, "updateDataJSInterface");
+        webView.addJavascriptInterface(sendDataJSInterface, "getDataJSInterface");
 
         // Последние приготолеия
         webView.clearCache(true);
-        webView.loadUrl("http://romhacking.pw/route_map2/map.html");
+        webView.loadUrl("http://romhacking.pw/route_map3/map.html");
 
         // Вернуть View фрагмента
         return returnedView;
@@ -100,13 +112,56 @@ public class SummaryFragment extends Fragment implements
     }
 
     @Override
-    public void onJSRequestUpdateRouteLength(float length) {
-        final float newLength = length;
+    public void onJSRequestUpdateRouteLength(final float length) {
+        // TODO: Перенести вычисление стоимости на сервер
+        float calclAdditionalKm = 0;
+        if (length - MainActivity.dataProvider.minTariffKm*1000 > 0)
+            calclAdditionalKm = length - MainActivity.dataProvider.minTariffKm*1000;
+
+        final float additionalKm = calclAdditionalKm;
+        final float additionalPay = additionalKm * MainActivity.dataProvider.additionalPricePerKm;
+
+        final float totalPrice = MainActivity.dataProvider.minTariffPrice + additionalPay;
+
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                priceTextView.setText(getResources().getString(R.string.cash, newLength));
+                calculationTextView.setText(getResources().getString(
+                        R.string.calculation,
+                        length/1000,
+                        MainActivity.dataProvider.minTariffKm,
+                        additionalKm,
+                        additionalPay
+                ));
+                priceTextView.setText(getResources().getString(R.string.price, totalPrice));
             }
         });
+    }
+
+    @Override
+    public int onJSRequestRoutePointsNumber() {
+        return adresses.size();
+    }
+
+    @Override
+    public double onJSRequestRoutePointCoord(int pointIndex, int coordIndex) {
+        if (pointIndex < 0 || pointIndex > adresses.size()) {
+            Log.e("RoutePointCoord", "Error pointIndex");
+            return -1;
+        }
+
+        switch (coordIndex) {
+            case 0: {
+                return adresses.get(pointIndex).longitude;
+            }
+            case 1: {
+                return adresses.get(pointIndex).latitude;
+            }
+            default: {
+                Log.e("RoutePointCoord", "Error coordIndex");
+                return -1;
+
+            }
+        }
     }
 }

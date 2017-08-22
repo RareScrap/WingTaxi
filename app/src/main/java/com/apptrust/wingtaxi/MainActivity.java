@@ -14,6 +14,10 @@ import android.view.MenuItem;
 
 import com.apptrust.wingtaxi.JSInterfaces.GPSRequireJSInterface;
 import com.apptrust.wingtaxi.fragments.MainFragment;
+import com.apptrust.wingtaxi.utils.DataProvider;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import static android.content.Intent.FLAG_ACTIVITY_NO_HISTORY;
 
@@ -22,8 +26,13 @@ import static android.content.Intent.FLAG_ACTIVITY_NO_HISTORY;
  * @author RareScrap
  */
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        DataProvider.DataReady {
 
+    /** Хранилище загруженных из сети данных в виде готовых для работы объектов */
+    public static DataProvider dataProvider;
+    /** Адрес сервера */
+    private static final String DATA_URL = "http://romhacking.pw/price_list.json";
     /** Номер телефона пользователя */
     public static String phoneNumber;
 
@@ -41,7 +50,6 @@ public class MainActivity extends AppCompatActivity
 
         // Тестовый сценарий
         //phoneNumber = "111";
-
 
         // Запуск инициализация MainActivity
         setContentView(R.layout.activity_main);
@@ -72,6 +80,19 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             intent.setFlags(intent.getFlags() | FLAG_ACTIVITY_NO_HISTORY);
             startActivity(intent); // Показать активити логина
+        }
+
+        // Подготавливаем DataProvider для загрузки данных
+        if (dataProvider == null) {
+            try {
+                dataProvider = new DataProvider(this, new URL(DATA_URL));
+                dataProvider.startDownloadData(); // Начинаем загрузку данных
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            /* По хорошему, тут должна показываться надпись "Ошибка в приложении. Сообщить разработчикам?",
+            но я думаю, что это будет очень плохо смотреться */
+                this.onDownloadError(); // Показать ошибку сети
+            }
         }
     }
 
@@ -147,5 +168,16 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onDataReady() {
+        LoginActivity.dataReady = true;
+    }
+
+    @Override
+    public void onDownloadError() {
+        LoginActivity.dataReady = false;
+        // TODO: Вывести диалог с объяснением ошибки сети
     }
 }
