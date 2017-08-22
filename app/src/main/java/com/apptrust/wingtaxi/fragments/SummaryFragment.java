@@ -3,6 +3,7 @@ package com.apptrust.wingtaxi.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.apptrust.wingtaxi.JSInterfaces.UpdateDataJSInterface;
+import com.apptrust.wingtaxi.MainActivity;
 import com.apptrust.wingtaxi.R;
 import com.apptrust.wingtaxi.utils.Adres;
 
@@ -22,7 +24,7 @@ import java.util.ArrayList;
  * A simple {@link Fragment} subclass.
  */
 public class SummaryFragment extends Fragment implements
-        UpdateDataJSInterface.JSRequestUpdateData{
+        UpdateDataJSInterface.JSRequestUpdateData {
     /** Адреса, которые будут переданы карте маршрутов */
     private ArrayList<Adres> adresses;
 
@@ -61,6 +63,11 @@ public class SummaryFragment extends Fragment implements
         webView = (WebView) returnedView.findViewById(R.id.webView);
         ok_button = (Button) returnedView.findViewById(R.id.ok_button);
 
+        // Названичение текста actionBar'у
+        ActionBar ab = ((MainActivity) this.getActivity()).getSupportActionBar();
+        ab.setTitle(R.string.check_order); // Вывести в титульую строку название блюда
+        ab.setSubtitle(getString(R.string.check_order_hint)); // Стереть подстроку
+
         // Текстовое представление всех адресов поездки
         String str = getString(R.string.following_addresses) + " ";
         for (int i = 0; i < adresses.size()-1; i++)
@@ -88,8 +95,8 @@ public class SummaryFragment extends Fragment implements
     }
 
     @Override
-    public void onJSRequestUpdateAdres(String newAdres) {
-        // Нас не интересует обновление адреса. Ничего не делаем.
+    public void onJSRequestUpdateAdres(double longitude, double latitude, String address) {
+        // ПОТОМ
     }
 
     @Override

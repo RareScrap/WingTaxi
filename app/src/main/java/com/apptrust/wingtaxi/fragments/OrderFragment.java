@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.apptrust.wingtaxi.MainActivity;
 import com.apptrust.wingtaxi.R;
 import com.apptrust.wingtaxi.utils.Adres;
 
@@ -91,6 +93,11 @@ public class OrderFragment extends Fragment {
         mTaxiListAdapter = new TaxiListAdapter(adreses, deleteClickListener);
         mRecyclerView.setAdapter(mTaxiListAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        // Названичение текста actionBar'у
+        ActionBar ab = ((MainActivity) this.getActivity()).getSupportActionBar();
+        ab.setTitle(R.string.trip_settings); // Вывести в титульую строку название блюда
+        ab.setSubtitle(""); // Стереть подстроку
 
         // Устаовка слушателя на кнопки
         addAdresImageButton.setOnClickListener(addAdresClickListener);

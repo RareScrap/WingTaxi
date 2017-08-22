@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import com.apptrust.wingtaxi.JSInterfaces.MapReadyJSInterface;
 import com.apptrust.wingtaxi.JSInterfaces.UpdateDataJSInterface;
 import com.apptrust.wingtaxi.JSInterfaces.GPSRequireJSInterface;
 import com.apptrust.wingtaxi.LoginActivity;
+import com.apptrust.wingtaxi.MainActivity;
 import com.apptrust.wingtaxi.R;
 import com.apptrust.wingtaxi.utils.Adres;
 
@@ -85,6 +87,16 @@ public class MainFragment extends Fragment implements
         textView = (TextView) returnedView.findViewById(R.id.textView);
         mButton = (Button) returnedView.findViewById(R.id.button);
         mButton.setOnClickListener(buttonClickListener);
+
+        // Названичение текста actionBar'у
+        ActionBar ab = ((MainActivity) this.getActivity()).getSupportActionBar();
+        if (orderFragmentLink == null) {
+            ab.setTitle(R.string.app_name); // Вывести в титульую строку название блюда
+            ab.setSubtitle(R.string.main_fragment_title);
+        } else {
+            ab.setTitle(R.string.main_fragment_title_add_address_mode); // Вывести в титульую строку название блюда
+            ab.setSubtitle(""); // Стереть подстроку
+        }
 
         // Инициализация WebView
         webView = (WebView) returnedView.findViewById(R.id.webView);
