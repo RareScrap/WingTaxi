@@ -20,35 +20,36 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/item_margin"
-                android:text="TextView"/>
+                android:text="@string/min_tariff"/>
 
             <TextView
                 android:id="@+id/adresses"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/item_margin"
-                android:text="TextView"/>
+                tools:text="Поездка по адресам: 1, 2, 3."
+                />
 
             <TextView
                 android:id="@+id/calculation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/item_margin"
-                android:text="TextView"/>
+                android:text="@string/calculation"/>
 
             <TextView
                 android:id="@+id/time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/item_margin"
-                android:text="TextView"/>
+                android:text="@string/time"/>
 
             <TextView
                 android:id="@+id/price"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/item_margin"
-                android:text="TextView"/>
+                android:text="@string/price"/>
         </LinearLayout>
     </ScrollView>
 
@@ -65,7 +66,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/scrollView3"
         android:layout_weight="1"
         android:text="@string/ok_button"/>
 

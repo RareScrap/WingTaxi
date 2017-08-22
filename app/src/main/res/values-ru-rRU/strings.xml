@@ -19,4 +19,13 @@
     <string name="ok_button">ОК</string>
     <string name="following_addresses">Поездка по адресам:</string>
     <string name="cash">К оплате: %1$.2f \u20bd</string>
+    <string name="main_fragment_title">Выберете начальную точку поездки</string>
+    <string name="main_fragment_title_add_address_mode">Выберете куда вы поедете</string>
+    <string name="trip_settings">Настройки поездки</string>
+    <string name="check_order">Подтвердите вашу поездку</string>
+    <string name="check_order_hint">Проверьте, все ли верно</string>
+    <string name="min_tariff">Минималка: %1$d км. Стоимость минималки - %2$d \u20bd. Каждый последующий километр - +%3$d \u20bd.</string>
+    <string name="calculation">Всего %1$.2f км. Из них минималка %2$d + дополнительные %3$.2f км (%4$.2f).</string>
+    <string name="time">Примерное время поездки: %1$d</string>
+    <string name="price">Итого к оплате: %1$.2f \u20bd</string>
 </resources>
