@@ -89,7 +89,7 @@ public class OrderFragment extends Fragment {
         addAdresImageButton = (ImageButton) returnedView.findViewById(R.id.addAdresImageButton);
         timeSetImageButton = (ImageButton) returnedView.findViewById(R.id.timeSetImageButton);
         nextButton = (Button) returnedView.findViewById(R.id.next_button);
-        timeTextView = (TextView) returnedView.findViewById(R.id.timeTextView);
+        timeTextView = (TextView) returnedView.findViewById(R.id.selectedTimeTextView);
         mTaxiListAdapter = new TaxiListAdapter(adreses, deleteClickListener);
         mRecyclerView.setAdapter(mTaxiListAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
