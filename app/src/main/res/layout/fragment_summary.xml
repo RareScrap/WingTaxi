@@ -43,6 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/item_margin"
+                android:text="@string/time_in_progress"
                 tools:text="@string/time_hm"/>
 
             <TextView
@@ -50,6 +51,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/item_margin"
+                android:text="@string/price_in_progress"
                 tools:text="@string/price"/>
         </LinearLayout>
     </ScrollView>

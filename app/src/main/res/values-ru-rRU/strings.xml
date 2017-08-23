@@ -27,8 +27,10 @@
     <string name="min_tariff">Минималка: %1$d км. Стоимость минималки - %2$.2f \u20bd. Каждый последующий километр - +%3$.2f \u20bd.</string>
     <string name="calculation">Всего %1$f км. Из них минималка %2$d км + дополнительные %3$f км (%4$.2f \u20bd).</string>
     <string name="calculation_in_progress">Путь: вычисляем…</string>
+    <string name="time_in_progress">Примерное время поездки: вычисляем…</string>
     <string name="time_m">Примерное время поездки: %1$d мин.</string>
     <string name="time_h">Примерное время поездки: %1$d ч.</string>
     <string name="time_hm">Примерное время поездки: %1$d ч %2$d мин.</string>
     <string name="price">Итого к оплате: %1$.2f \u20bd</string>
+    <string name="price_in_progress">Итого к оплате: Вычисляем…</string>
 </resources>
