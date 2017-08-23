@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.ConsoleMessage;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -91,6 +93,15 @@ public class SummaryFragment extends Fragment implements
         webSettings.setJavaScriptEnabled(true);
         webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
 
+        webView.setWebChromeClient(new WebChromeClient() {
+            public boolean onConsoleMessage(ConsoleMessage cm) {
+                Log.d("MyApplication", cm.message() + " -- From line "
+                        + cm.lineNumber() + " of "
+                        + cm.sourceId() );
+                return true;
+            }
+        });
+
         // Инициализация JS-интерфейсов
         UpdateDataJSInterface updateDataJSInterface = new UpdateDataJSInterface(this);
         SendDataJSInterface sendDataJSInterface = new SendDataJSInterface(this);
@@ -116,7 +127,7 @@ public class SummaryFragment extends Fragment implements
         // TODO: Перенести вычисление стоимости на сервер
         float calclAdditionalKm = 0;
         if (length - MainActivity.dataProvider.minTariffKm*1000 > 0)
-            calclAdditionalKm = length - MainActivity.dataProvider.minTariffKm*1000;
+            calclAdditionalKm = length/1000 - MainActivity.dataProvider.minTariffKm;
 
         final float additionalKm = calclAdditionalKm;
         final float additionalPay = additionalKm * MainActivity.dataProvider.additionalPricePerKm;
@@ -134,6 +145,24 @@ public class SummaryFragment extends Fragment implements
                         additionalPay
                 ));
                 priceTextView.setText(getResources().getString(R.string.price, totalPrice));
+            }
+        });
+    }
+
+    @Override
+    public void onJSRequestUpdateTripTime(final int h, final int m) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (h > 0 && m > 0) {
+                    timeTextView.setText(getResources().getString(R.string.time_hm, h, m));
+                } else {
+                    if (h > 0 && m == 0) {
+                        timeTextView.setText(getResources().getString(R.string.time_h, h));
+                    } else {
+                        timeTextView.setText(getResources().getString(R.string.time_m, m));
+                    }
+                }
             }
         });
     }

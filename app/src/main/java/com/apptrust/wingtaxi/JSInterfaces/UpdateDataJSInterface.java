@@ -10,6 +10,7 @@ public class UpdateDataJSInterface {
     public interface JSRequestUpdateData {
         void onJSRequestUpdateAdres(double longitude, double latitude, String address);
         void onJSRequestUpdateRouteLength(float length);
+        void onJSRequestUpdateTripTime(int h, int m);
     }
 
     /** Объект реализации интерфейса. Приходит из вне */
@@ -31,5 +32,10 @@ public class UpdateDataJSInterface {
     @JavascriptInterface
     public void updateRouteLength(float length) {
         jsDataUpdater.onJSRequestUpdateRouteLength(length);
+    }
+
+    @JavascriptInterface
+    public void updateTripTime(int h, int m) {
+        jsDataUpdater.onJSRequestUpdateTripTime(h, m);
     }
 }

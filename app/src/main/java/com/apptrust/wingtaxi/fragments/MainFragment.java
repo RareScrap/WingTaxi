@@ -185,4 +185,9 @@ public class MainFragment extends Fragment implements
     public void onJSRequestUpdateRouteLength(float length) {
         // Нас не интересует маршрут. Ничего не делаем
     }
+
+    @Override
+    public void onJSRequestUpdateTripTime(int h, int m) {
+        // Нас не интересует время пути. Ничего не делаем
+    }
 }
