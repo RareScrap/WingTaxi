@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.apptrust.wingtaxi.MainActivity;
 import com.apptrust.wingtaxi.R;
+import com.apptrust.wingtaxi.utils.Adres;
 import com.apptrust.wingtaxi.utils.Order;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -187,6 +188,24 @@ public class HistoryFragment extends Fragment {
 
                 addressItemTExtView.setText(orderItem.adresses.get(i).textAdres);
                 deleteButton.setVisibility(View.GONE);
+
+                // Обработка поведения View'хи при разных количествах элементов в списке
+                ArrayList<Adres> adreses = orderItem.adresses;
+                int pos = i;
+
+                View topLine = addressItem.findViewById(R.id.top_line);
+                View bottomLine = addressItem.findViewById(R.id.bottom_line);
+                topLine.setVisibility(View.VISIBLE);
+                bottomLine.setVisibility(View.VISIBLE);
+                if (adreses.size() == pos+1 && adreses.size() == 1) {
+                    topLine.setVisibility(View.INVISIBLE);
+                    bottomLine.setVisibility(View.INVISIBLE);
+                } else {
+                    if (pos == 0)
+                        topLine.setVisibility(View.INVISIBLE);
+                    if (pos == adreses.size()-1)
+                        bottomLine.setVisibility(View.INVISIBLE);
+                }
 
                 LinearLayout linearLayout = (LinearLayout) holder.itemView.findViewById(R.id.addresses_list);
                 //((ViewGroup)address.getParent()).removeView(address);
