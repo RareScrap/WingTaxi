@@ -33,4 +33,5 @@
     <string name="time_hm">Примерное время поездки: %1$d ч %2$d мин.</string>
     <string name="price">Итого к оплате: %1$.2f \u20bd</string>
     <string name="price_in_progress">Итого к оплате: Вычисляем…</string>
+    <string name="fragment_history_title">История заказов</string>
 </resources>

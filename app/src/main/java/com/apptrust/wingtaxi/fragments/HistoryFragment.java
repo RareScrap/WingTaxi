@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.apptrust.wingtaxi.MainActivity;
@@ -37,7 +38,7 @@ import java.util.ArrayList;
 public class HistoryFragment extends Fragment {
     private RecyclerView mRecyclerView;
     /** Адаптер списка */
-    //private HistoryListAdapter mHistoryListAdapter;
+    private HistoryListAdapter mHistoryListAdapter;
     private ArrayList<Order> orders = new ArrayList<>();
 
     public static HistoryFragment newInstance() {
@@ -65,7 +66,7 @@ public class HistoryFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View returnedView = inflater.inflate(R.layout.fragment_order, container, false);
+        View returnedView = inflater.inflate(R.layout.fragment_history, container, false);
 
         // TODO: Взять orders с диска
         // Получаем список имен файлов
@@ -123,9 +124,9 @@ public class HistoryFragment extends Fragment {
 
         // Инициализация UI списка
         mRecyclerView = (RecyclerView) returnedView.findViewById(R.id.recyclerView);
-        //mHistoryListAdapter = new HistoryListAdapter(orders,reuseClickListener)
-        //mRecyclerView.setAdapter(mHistoryListAdapter);
-        //mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mHistoryListAdapter = new HistoryListAdapter(orders, reuseClickListener);
+        mRecyclerView.setAdapter(mHistoryListAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         // Названичение текста actionBar'у
         ActionBar ab = ((MainActivity) this.getActivity()).getSupportActionBar();
@@ -135,4 +136,88 @@ public class HistoryFragment extends Fragment {
         // Вернуть UI фрагмента
         return returnedView;
     }
+
+    public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.ViewHolder> {
+        /**
+         * Список адресов, которые выбрал пользователь
+         */
+        public ArrayList<Order> orders = new ArrayList<>();
+        private final View.OnClickListener clickListener;
+
+        public HistoryListAdapter(ArrayList<Order> orders, View.OnClickListener clickListener) {
+            this.orders = orders;
+            this.clickListener = clickListener;
+        }
+
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            public final LinearLayout linearLayout;
+            public final Button reuseButton;
+            public View address;
+
+            public ViewHolder(View itemView, View.OnClickListener clickListener) {
+                super(itemView);
+
+                // Получение ссылок на элеметы UI
+                linearLayout = (LinearLayout) itemView.findViewById(R.id.addresses_list);
+                reuseButton = (Button) itemView.findViewById(R.id.reuse_button);
+                reuseButton.setOnClickListener(clickListener);
+
+                address = LayoutInflater.from(getContext()).inflate(R.layout.item_fragment_order_recyclerview, null, false);
+            }
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            // Заполнение макета item'а списка
+            View view = LayoutInflater.from( parent.getContext() ).inflate(R.layout.item_fragment_history_recyclerview, parent, false);
+            View address = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_fragment_order_recyclerview, parent, false);
+
+            ImageButton deleteButton = (ImageButton) address.findViewById(R.id.deleteButton);
+            deleteButton.setVisibility(View.GONE);
+
+            // Создание ViewHolder для текущего элемента
+            return (new ViewHolder(view, clickListener));
+        }
+
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            // Получение объекта Order для заданной позиции RecyclerView
+            Order orderItem = orders.get(position);
+
+            for (int i = 0; i < orderItem.adresses.size(); i++) {
+                RelativeLayout addressItem = (RelativeLayout) LayoutInflater.from(getContext()).inflate(R.layout.item_fragment_order_recyclerview, null, false);
+                TextView addressItemTExtView = (TextView) addressItem.findViewById(R.id.adresTextView);
+
+                addressItemTExtView.setText(orderItem.adresses.get(i).textAdres);
+
+                LinearLayout linearLayout = (LinearLayout) holder.itemView.findViewById(R.id.addresses_list);
+                //((ViewGroup)address.getParent()).removeView(address);
+                linearLayout.addView(addressItem);
+            }
+
+        }
+
+        /**
+         * Returns the total number of items in the data set held by the adapter.
+         *
+         * @return The total number of items in this adapter.
+         */
+        @Override
+        public int getItemCount() {
+            return orders.size();
+        }
+    }
+
+    View.OnClickListener reuseClickListener = new View.OnClickListener() {
+        /**
+         * Called when a view has been clicked.
+         *
+         * @param view The view that was clicked.
+         */
+        @Override
+        public void onClick(View view) {
+        }
+    };
 }
