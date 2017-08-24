@@ -58,6 +58,16 @@ public class OrderFragment extends Fragment {
         return fragment;
     }
 
+    public static OrderFragment newInstance(ArrayList<Adres> addressList) {
+        OrderFragment fragment = new OrderFragment();
+
+        // Добавляет первый адрес в список адресов
+        fragment.adreses = addressList;
+
+        // Вернуть новый экземпляр фрагмента
+        return fragment;
+    }
+
 
     /**
      * Called to have the fragment instantiate its user interface view.

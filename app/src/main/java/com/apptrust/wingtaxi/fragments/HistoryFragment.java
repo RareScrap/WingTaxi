@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -233,6 +234,20 @@ public class HistoryFragment extends Fragment {
          */
         @Override
         public void onClick(View view) {
+            FragmentTransaction fTrans = getFragmentManager().beginTransaction();
+
+            HistoryListAdapter.ViewHolder viewHolder = (HistoryListAdapter.ViewHolder) mRecyclerView.getChildViewHolder((View) view.getParent());
+            int pos = viewHolder.getLayoutPosition();
+
+            // Иницилазация нового фрагмета
+            OrderFragment orderFragment = OrderFragment.newInstance(orders.get(pos).adresses);
+            fTrans.addToBackStack(null);
+            fTrans.replace(R.id.fragment_container, orderFragment);
+            fTrans.commit();
+
+            // Очистка ненужных более View
+            // TODO: При первом запуске приложения без этой строки можно обойтись, но после изменения currentMode, без этой строки не стирается прдыдущий view
+            ( (ViewGroup) getActivity().findViewById(R.id.fragment_container) ).removeAllViews();
         }
     };
 }
