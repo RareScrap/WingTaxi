@@ -1,6 +1,7 @@
 package com.apptrust.wingtaxi.fragments;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -20,8 +21,15 @@ import com.apptrust.wingtaxi.JSInterfaces.UpdateDataJSInterface;
 import com.apptrust.wingtaxi.MainActivity;
 import com.apptrust.wingtaxi.R;
 import com.apptrust.wingtaxi.utils.Adres;
+import com.apptrust.wingtaxi.utils.Order;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -66,6 +74,8 @@ public class SummaryFragment extends Fragment implements
         priceTextView = (TextView) returnedView.findViewById(R.id.price);
         webView = (WebView) returnedView.findViewById(R.id.webView);
         ok_button = (Button) returnedView.findViewById(R.id.ok_button);
+
+        ok_button.setOnClickListener(okClickListener);
 
         // Назначение теста элементам UI
         minTextView.setText(getResources().getString(
@@ -193,4 +203,41 @@ public class SummaryFragment extends Fragment implements
             }
         }
     }
+
+    View.OnClickListener okClickListener = new View.OnClickListener() {
+        /**
+         * Called when a view has been clicked.
+         *
+         * @param view The view that was clicked.
+         */
+        @Override
+        public void onClick(View view) {
+            Calendar rightNow = Calendar.getInstance();
+            int h = rightNow.get(Calendar.HOUR_OF_DAY);
+            int m = rightNow.get(Calendar.MINUTE);
+            Order order = new Order(adresses, h, m);
+
+            GsonBuilder builder = new GsonBuilder();
+            Gson gson = builder.create();
+            Log.i("GSON", gson.toJson(order));
+
+            SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyy-HH.mm.ss");
+            String fileName = format.format(rightNow.getTime()) + ".json";
+
+            try {
+                //File file = new File(path, rightNow.toString() + ".json");
+                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(
+                        getContext().openFileOutput(
+                                fileName,
+                                Context.MODE_PRIVATE
+                        )
+                );
+                outputStreamWriter.write(gson.toJson(order));
+                outputStreamWriter.close();
+            }
+             catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    };
 }
