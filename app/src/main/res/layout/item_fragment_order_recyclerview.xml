@@ -67,10 +67,10 @@
                 android:layout_alignBottom="@+id/deleteButton"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
+                android:layout_margin="@dimen/item_margin"
                 android:layout_toStartOf="@+id/deleteButton"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:padding="@dimen/adres_list_text_padding"
                 android:text="TextView"/>
         </RelativeLayout>
     </FrameLayout>
