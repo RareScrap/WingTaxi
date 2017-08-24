@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent" android:layout_height="match_parent">
 
     <Button
         android:id="@+id/next_button"
@@ -21,18 +21,18 @@
 
     </android.support.v7.widget.RecyclerView>
 
-    <GridLayout
+    <android.support.v7.widget.GridLayout
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_above="@+id/next_button"
         android:layout_below="@+id/adresRecyclerView"
-        android:columnCount="2"
-        android:rowCount="1">
+        app:columnCount="2"
+        app:rowCount="1">
 
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_columnWeight="1">
+            app:layout_columnWeight="1">
 
             <ImageButton
                 android:id="@+id/addAdresImageButton"
@@ -53,7 +53,7 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_columnWeight="1">
+            app:layout_columnWeight="1">
 
             <TextView
                 android:id="@+id/timeTextView"
@@ -78,6 +78,6 @@
                 android:layout_centerHorizontal="true"/>
         </RelativeLayout>
 
-    </GridLayout>
+    </android.support.v7.widget.GridLayout>
 
 </RelativeLayout>
