@@ -153,7 +153,6 @@ public class HistoryFragment extends Fragment {
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final LinearLayout linearLayout;
             public final Button reuseButton;
-            public View address;
 
             public ViewHolder(View itemView, View.OnClickListener clickListener) {
                 super(itemView);
@@ -162,8 +161,6 @@ public class HistoryFragment extends Fragment {
                 linearLayout = (LinearLayout) itemView.findViewById(R.id.addresses_list);
                 reuseButton = (Button) itemView.findViewById(R.id.reuse_button);
                 reuseButton.setOnClickListener(clickListener);
-
-                address = LayoutInflater.from(getContext()).inflate(R.layout.item_fragment_order_recyclerview, null, false);
             }
         }
 
@@ -171,10 +168,6 @@ public class HistoryFragment extends Fragment {
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             // Заполнение макета item'а списка
             View view = LayoutInflater.from( parent.getContext() ).inflate(R.layout.item_fragment_history_recyclerview, parent, false);
-            View address = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_fragment_order_recyclerview, parent, false);
-
-            ImageButton deleteButton = (ImageButton) address.findViewById(R.id.deleteButton);
-            deleteButton.setVisibility(View.GONE);
 
             // Создание ViewHolder для текущего элемента
             return (new ViewHolder(view, clickListener));
@@ -187,10 +180,13 @@ public class HistoryFragment extends Fragment {
             Order orderItem = orders.get(position);
 
             for (int i = 0; i < orderItem.adresses.size(); i++) {
+                // TODO: Лучшее ли это место для инфлейта элемента списка адресов? Хорошая ли идея перенести это в onCreateViewHolder()?
                 RelativeLayout addressItem = (RelativeLayout) LayoutInflater.from(getContext()).inflate(R.layout.item_fragment_order_recyclerview, null, false);
                 TextView addressItemTExtView = (TextView) addressItem.findViewById(R.id.adresTextView);
+                ImageButton deleteButton = (ImageButton) addressItem.findViewById(R.id.deleteButton);
 
                 addressItemTExtView.setText(orderItem.adresses.get(i).textAdres);
+                deleteButton.setVisibility(View.GONE);
 
                 LinearLayout linearLayout = (LinearLayout) holder.itemView.findViewById(R.id.addresses_list);
                 //((ViewGroup)address.getParent()).removeView(address);
