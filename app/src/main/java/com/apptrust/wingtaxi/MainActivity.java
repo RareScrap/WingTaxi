@@ -1,19 +1,26 @@
 package com.apptrust.wingtaxi;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.apptrust.wingtaxi.JSInterfaces.GPSRequireJSInterface;
+import com.apptrust.wingtaxi.fragments.HistoryFragment;
 import com.apptrust.wingtaxi.fragments.MainFragment;
+import com.apptrust.wingtaxi.fragments.OrderFragment;
 import com.apptrust.wingtaxi.utils.DataProvider;
 
 import java.net.MalformedURLException;
@@ -144,7 +151,33 @@ public class MainActivity extends AppCompatActivity
         if (drawer != null && drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            int index = getSupportFragmentManager().getBackStackEntryCount() - 1;
+            FragmentManager.BackStackEntry backEntry = getSupportFragmentManager().getBackStackEntryAt(index);
+            String tag = backEntry.getName();
+            if ("MainFragment".equals(tag)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Вернуться к выбору начальной точке?")
+                        .setMessage("Если вы продолжите, адреса в этом заказе будут очищены")
+                        //.setIcon(R.drawable.ic_android_cat)
+                        .setCancelable(true)
+                        .setPositiveButton(R.string.ok_alert, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                MainActivity.super.onBackPressed();
+                                return;
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel_alert_dialog,
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                AlertDialog alert = builder.create();
+                alert.show();
+            } else {
+                super.onBackPressed();
+            }
         }
     }
 
@@ -161,7 +194,17 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_map) {
             // Handle the camera action
         } else if (id == R.id.nav_history) {
+            FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
 
+            // Иницилазация нового фрагмета
+            HistoryFragment historyFragment = HistoryFragment.newInstance();
+            fTrans.addToBackStack(null);
+            fTrans.replace(R.id.fragment_container, historyFragment);
+            fTrans.commit();
+
+            // Очистка ненужных более View
+            // TODO: При первом запуске приложения без этой строки можно обойтись, но после изменения currentMode, без этой строки не стирается прдыдущий view
+            ( (ViewGroup) findViewById(R.id.fragment_container) ).removeAllViews();
         }
 
         // Закрыть после выбора элемента
