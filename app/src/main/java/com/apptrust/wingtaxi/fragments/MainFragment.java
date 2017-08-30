@@ -150,8 +150,9 @@ public class MainFragment extends Fragment implements
 
                 // Иницилазация нового фрагмета
                 OrderFragment orderFragment = OrderFragment.newInstance(selectedAddress);
-                fTrans.addToBackStack(null);
+                fTrans.addToBackStack("MainFragment");
                 fTrans.replace(R.id.fragment_container, orderFragment);
+                fTrans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 fTrans.commit();
 
                 // Очистка ненужных более View

@@ -269,6 +269,7 @@ public class OrderFragment extends Fragment {
             MainFragment mainFragment = MainFragment.newInstance(OrderFragment.this);
             fTrans.addToBackStack(null);
             fTrans.replace(R.id.fragment_container, mainFragment);
+            fTrans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             fTrans.commit();
 
             // Очистка ненужных более View
@@ -310,6 +311,7 @@ public class OrderFragment extends Fragment {
             SummaryFragment summaryFragment = SummaryFragment.newInstance(adreses);
             fTrans.addToBackStack(null);
             fTrans.replace(R.id.fragment_container, summaryFragment);
+            fTrans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             fTrans.commit();
 
             // Очистка ненужных более View

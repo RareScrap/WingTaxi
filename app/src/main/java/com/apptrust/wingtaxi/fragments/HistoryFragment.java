@@ -243,6 +243,7 @@ public class HistoryFragment extends Fragment {
             OrderFragment orderFragment = OrderFragment.newInstance(orders.get(pos).adresses);
             fTrans.addToBackStack(null);
             fTrans.replace(R.id.fragment_container, orderFragment);
+            fTrans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             fTrans.commit();
 
             // Очистка ненужных более View
