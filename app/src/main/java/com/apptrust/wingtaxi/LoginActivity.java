@@ -3,6 +3,7 @@ package com.apptrust.wingtaxi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
@@ -155,6 +156,11 @@ public class LoginActivity extends AppCompatActivity {
                     // Сохраняем номер телефона в главной активити
                     // TODO: Сохранять в SharedPreferences
                     MainActivity.phoneNumber = "test";
+
+                    SharedPreferences sharedPref = getSharedPreferences("phone", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString("phone", phoneField.getText().toString());
+                    editor.apply();
 
                     // Проверяем загрузилась ли карта во фрагменте на основной активити
                     if (!mapReady) {

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -153,6 +154,7 @@ public class MainActivity extends AppCompatActivity
         } else {
             int index = getSupportFragmentManager().getBackStackEntryCount() - 1;
             FragmentManager.BackStackEntry backEntry = getSupportFragmentManager().getBackStackEntryAt(index);
+            //Fragment asd = getSupportFragmentManager();
             String tag = backEntry.getName();
             if ("MainFragment".equals(tag)) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);

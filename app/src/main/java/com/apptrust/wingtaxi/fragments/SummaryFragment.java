@@ -2,7 +2,12 @@ package com.apptrust.wingtaxi.fragments;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
@@ -15,21 +20,38 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.apptrust.wingtaxi.JSInterfaces.SendDataJSInterface;
 import com.apptrust.wingtaxi.JSInterfaces.UpdateDataJSInterface;
 import com.apptrust.wingtaxi.MainActivity;
 import com.apptrust.wingtaxi.R;
 import com.apptrust.wingtaxi.utils.Adres;
+import com.apptrust.wingtaxi.utils.DataProvider;
 import com.apptrust.wingtaxi.utils.Order;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import javax.net.ssl.HttpsURLConnection;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -50,14 +72,18 @@ public class SummaryFragment extends Fragment implements
 
     private Button ok_button;
 
+    private float price;
+    private String preferedTime;
+    private Handler toastHandler;
 
     public SummaryFragment() {
         // Required empty public constructor
     }
 
-    public static SummaryFragment newInstance(ArrayList<Adres> adresses) {
+    public static SummaryFragment newInstance(ArrayList<Adres> adresses, String time) {
         SummaryFragment fragment = new SummaryFragment();
         fragment.adresses = adresses;
+        fragment.preferedTime = time;
         return fragment;
     }
 
@@ -123,6 +149,17 @@ public class SummaryFragment extends Fragment implements
         webView.clearCache(true);
         webView.loadUrl("http://romhacking.pw/route_map3/map.html");
 
+        toastHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                if (msg.what == 1) {
+                    Toast.makeText(getContext(), "Заказ успешно отправлен", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Не удалось отправить заказ", Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+
         // Вернуть View фрагмента
         return returnedView;
     }
@@ -143,6 +180,7 @@ public class SummaryFragment extends Fragment implements
         final float additionalPay = additionalKm * MainActivity.dataProvider.additionalPricePerKm;
 
         final float totalPrice = MainActivity.dataProvider.minTariffPrice + additionalPay;
+        price = totalPrice;
 
         getActivity().runOnUiThread(new Runnable() {
             @Override
@@ -238,6 +276,96 @@ public class SummaryFragment extends Fragment implements
              catch (IOException e) {
                 e.printStackTrace();
             }
+
+
+            // Запрос на отправку данных
+            try {
+                SendDataTask sendDataTask = new SendDataTask();
+                sendDataTask.execute();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     };
+
+    private class SendDataTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            JSONObject json = new JSONObject();
+
+            JSONArray arr = new JSONArray();
+            for (int i = 0; i < adresses.size(); i++) {
+                arr.put(adresses.get(i).textAdres);
+            }
+
+            SharedPreferences sharedPref = getActivity().getSharedPreferences("phone", Context.MODE_PRIVATE);
+            String phone = sharedPref.getString("phone", "AZAZA");
+
+            try {
+                json.put("addresses", arr);
+                json.put("phoneNumber", phone);
+                json.put("password", "nahui_idi_.!.");
+                json.put("price", (int) price);
+                json.put("date", preferedTime);
+            } catch (JSONException e) {}
+
+
+
+            String response = "";
+            try {
+                URL url = new URL("http://romhacking.pw:8081/makeorder");
+
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(15000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestMethod("GET");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                conn.setRequestProperty("Secret", "c8df37bef1275f33");
+
+
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                writer.write(json.toString());
+
+                writer.flush();
+                writer.close();
+                os.close();
+                int responseCode=conn.getResponseCode();
+
+                if (responseCode == HttpsURLConnection.HTTP_OK) {
+                    Message message = toastHandler.obtainMessage(1);
+                    message.sendToTarget();
+
+                    String line;
+                    BufferedReader br=new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    while ((line=br.readLine()) != null) {
+                        response+=line;
+                    }
+                }
+                else {
+                    Message message = toastHandler.obtainMessage(0);
+                    message.sendToTarget();
+                    response="";
+
+                }
+            } catch (Exception e) {
+                Message message = toastHandler.obtainMessage(0);
+                message.sendToTarget();
+                e.printStackTrace();
+            }
+
+            
+            
+            
+            
+        
+
+
+
+            return null;
+        }
+    }
 }

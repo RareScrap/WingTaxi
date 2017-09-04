@@ -308,7 +308,7 @@ public class OrderFragment extends Fragment {
             FragmentTransaction fTrans = getFragmentManager().beginTransaction();
 
             // Иницилазация нового фрагмета
-            SummaryFragment summaryFragment = SummaryFragment.newInstance(adreses);
+            SummaryFragment summaryFragment = SummaryFragment.newInstance(adreses, (String) timeTextView.getText());
             fTrans.addToBackStack(null);
             fTrans.replace(R.id.fragment_container, summaryFragment);
             fTrans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);

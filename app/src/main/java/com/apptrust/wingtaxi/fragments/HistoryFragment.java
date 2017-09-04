@@ -180,6 +180,9 @@ public class HistoryFragment extends Fragment {
         public void onBindViewHolder(ViewHolder holder, int position) {
             // Получение объекта Order для заданной позиции RecyclerView
             Order orderItem = orders.get(position);
+            LinearLayout linearLayout = (LinearLayout) holder.itemView.findViewById(R.id.addresses_list);
+
+            linearLayout.removeAllViews();
 
             for (int i = 0; i < orderItem.adresses.size(); i++) {
                 // TODO: Лучшее ли это место для инфлейта элемента списка адресов? Хорошая ли идея перенести это в onCreateViewHolder()?
@@ -208,7 +211,7 @@ public class HistoryFragment extends Fragment {
                         bottomLine.setVisibility(View.INVISIBLE);
                 }
 
-                LinearLayout linearLayout = (LinearLayout) holder.itemView.findViewById(R.id.addresses_list);
+                linearLayout = (LinearLayout) holder.itemView.findViewById(R.id.addresses_list);
                 //((ViewGroup)address.getParent()).removeView(address);
                 linearLayout.addView(addressItem);
             }
