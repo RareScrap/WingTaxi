@@ -75,8 +75,10 @@ public class LoginActivity extends AppCompatActivity {
     public static boolean mapReady = false;
     public static boolean dataReady = false;
     private static boolean smsConfirmed = false;
-    
+
     private String token;
+
+    private AlertDialog dialog = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -150,6 +152,10 @@ public class LoginActivity extends AppCompatActivity {
                 container.removeView(view);
             }
         });
+
+        dialog = (new AlertDialog.Builder(this).setMessage("Пожалуйста, подождите")
+            .setView(R.layout.dialog_fragment_download)
+            .setCancelable(false)).create();
     }
 
     private Button.OnClickListener buttonClickListener = new Button.OnClickListener() {
@@ -168,6 +174,11 @@ public class LoginActivity extends AppCompatActivity {
 
             //TODO Отправить введенный юзером код запрсом через ретрофит
             if (viewPager.getCurrentItem() == 0) {
+                if (phoneField.getText().toString().length() != 18) {
+                    Toast.makeText(LoginActivity.this, "Некорректный номер", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 // Сохряняем номер телефона
                 SharedPreferences sharedPref = getSharedPreferences("phone", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
@@ -186,6 +197,11 @@ public class LoginActivity extends AppCompatActivity {
 
             // Тестовый сценарий
             if (viewPager.getCurrentItem() == 1) {
+                if (codeField.getText().toString().length() != 6) {
+                    Toast.makeText(LoginActivity.this, "В коде должно быть 6 цифр", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 // Скрываем клавиатуру, т.к. она больше нам не понадобится
                 InputMethodManager inputMethodManager = (InputMethodManager) LoginActivity.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
                 inputMethodManager.hideSoftInputFromWindow(LoginActivity.this.getCurrentFocus().getWindowToken(), 0);
@@ -193,6 +209,19 @@ public class LoginActivity extends AppCompatActivity {
                 if (token != null) {
                     ConfirmTask confirmTask = new ConfirmTask();
                     confirmTask.execute(token, codeField.getText().toString());
+
+                    // Проверяем загрузилась ли карта во фрагменте на основной активити
+                    if ( !(mapReady && smsConfirmed && dataReady) ) {
+                        // Начинаем загрузку
+                        showDownloadDialog();
+                        return; // Действие закончено
+                    }
+                    else {
+                        // Карта успешно загрудена и мы можем отобразить основную активити
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        intent.setFlags(intent.getFlags() | FLAG_ACTIVITY_REORDER_TO_FRONT);
+                        startActivity(intent);
+                    }
                 } else {
                     Toast.makeText(LoginActivity.this, "Вам еще не пришел код", Toast.LENGTH_SHORT).show();
                 }
@@ -243,12 +272,7 @@ public class LoginActivity extends AppCompatActivity {
      * ({@link #downloadChecker(long, long)})
      */
     private void showDownloadDialog() {
-        // Строим и показываем диалог
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Пожалуйста, подождите");
-        builder.setView(R.layout.dialog_fragment_download);
-        builder.setCancelable(false);
-        builder.create().show();
+        dialog.show();
 
         // Начинаем отслеживать изменение флага загрузки
         downloadChecker(MAP_CHECK_DELAY, MAP_CHECK_PERIOD);
@@ -285,8 +309,15 @@ public class LoginActivity extends AppCompatActivity {
         final TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
+                if (!dialog.isShowing()) {
+                    timer.cancel();
+                    timer.purge();
+                    return;
+                }
+
                 if (mapReady && dataReady && smsConfirmed) {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.putExtra("smsConfirmed", smsConfirmed);
                     intent.setFlags(intent.getFlags() | FLAG_ACTIVITY_REORDER_TO_FRONT);
                     startActivity(intent);
                     timer.cancel();
@@ -474,8 +505,10 @@ public class LoginActivity extends AppCompatActivity {
             // TODO: Проверку на null
 
             JSONObject responseJSON = null;
+            boolean status = true;
             try {
                 responseJSON = new JSONObject(response);
+                status = responseJSON.getBoolean("status");
             } catch (JSONException e) {
                 // Извещаем ToastHandler о неуспешной отправке запроса с кодом подтверждения
                 toastHandler.obtainMessage(ToastHandler.SERVER_INTERNAL_ERROR).sendToTarget();
@@ -483,6 +516,11 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             // TODO: Проверять статус ответа
+            if (status == false) {
+                dialog.dismiss();
+                toastHandler.obtainMessage(ToastHandler.INCORRECT_SMS).sendToTarget();
+                return;
+            }
 
             // Сохраняем токен
             try {

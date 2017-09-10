@@ -1,7 +1,9 @@
 package com.apptrust.wingtaxi;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -42,7 +44,7 @@ public class MainActivity extends AppCompatActivity
     /** Адрес сервера */
     private static final String DATA_URL = "http://romhacking.pw/price_list.json";
     /** Номер телефона пользователя */
-    public static String phoneNumber;
+    //public static String phoneNumber;
 
     /**
      * Заполняет UI и инициализирует компоненты активити: NavDraver, Draverlayout. После иницализации
@@ -82,9 +84,12 @@ public class MainActivity extends AppCompatActivity
         //transaction.addToBackStack(null);
         transaction.commit();
 
-
+        boolean smsConfirmed = false;
+        if (getIntent().getExtras() != null) {
+            smsConfirmed = getIntent().getExtras().getBoolean("smsConfirmed");
+        }
         // Проверка на наличие номера
-        if (phoneNumber == null || phoneNumber.isEmpty()) {
+        if (!smsConfirmed) {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             intent.setFlags(intent.getFlags() | FLAG_ACTIVITY_NO_HISTORY);
             startActivity(intent); // Показать активити логина

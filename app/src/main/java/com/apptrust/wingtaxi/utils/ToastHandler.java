@@ -9,6 +9,7 @@ public class ToastHandler extends Handler {
     public static final int CONNECTION_ERROR = 0;
     public static final int SMS_REQUEST_SENT = 1;
     public static final int SERVER_INTERNAL_ERROR = 2;
+    public static final int INCORRECT_SMS = 3;
 
     private Context mContext;
 
@@ -26,6 +27,10 @@ public class ToastHandler extends Handler {
             }
             case SMS_REQUEST_SENT: {
                 Toast.makeText(mContext, "Сейчас придет СМС с кодом", Toast.LENGTH_SHORT).show();
+                break;
+            }
+            case INCORRECT_SMS: {
+                Toast.makeText(mContext, "Неверный код", Toast.LENGTH_SHORT).show();
                 break;
             }
             case SERVER_INTERNAL_ERROR: {
