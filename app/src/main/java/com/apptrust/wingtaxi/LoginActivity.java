@@ -14,6 +14,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,8 +52,8 @@ import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
  * Created by rares on 01.08.2017.
  */
 public class LoginActivity extends AppCompatActivity {
-    private static final long MAP_CHECK_DELAY = 50;
-    private static final long MAP_CHECK_PERIOD = 20000;
+    private static final long MAP_CHECK_DELAY = 0;
+    private static final long MAP_CHECK_PERIOD = 2000;
 
     /** Кнопка "продолжить" */
     private Button button;
@@ -274,6 +275,8 @@ public class LoginActivity extends AppCompatActivity {
     private void showDownloadDialog() {
         dialog.show();
 
+        Log.d("timer_start", "123q");
+
         // Начинаем отслеживать изменение флага загрузки
         downloadChecker(MAP_CHECK_DELAY, MAP_CHECK_PERIOD);
     }
@@ -309,17 +312,22 @@ public class LoginActivity extends AppCompatActivity {
         final TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
+                Log.d("timer_iter", "123q");
+
                 if (!dialog.isShowing()) {
                     timer.cancel();
                     timer.purge();
+                    Log.d("timer_stop", "123q");
                     return;
                 }
 
                 if (mapReady && dataReady && smsConfirmed) {
+                    Log.d("intent_start", "123q");
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.putExtra("smsConfirmed", smsConfirmed);
                     intent.setFlags(intent.getFlags() | FLAG_ACTIVITY_REORDER_TO_FRONT);
                     startActivity(intent);
+                    Log.d("timer_stop", "123q");
                     timer.cancel();
                     timer.purge();
                 }
