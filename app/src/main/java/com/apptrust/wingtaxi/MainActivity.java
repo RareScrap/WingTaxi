@@ -158,6 +158,10 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
             int index = getSupportFragmentManager().getBackStackEntryCount() - 1;
+            if (index == -1) {
+                super.onBackPressed();
+                return;
+            }
             FragmentManager.BackStackEntry backEntry = getSupportFragmentManager().getBackStackEntryAt(index);
             //Fragment asd = getSupportFragmentManager();
             String tag = backEntry.getName();
