@@ -3,7 +3,6 @@ package com.apptrust.wingtaxi.fragments;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.icu.text.SimpleDateFormat;
-import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.app.DatePickerDialog;
@@ -12,6 +11,7 @@ import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
