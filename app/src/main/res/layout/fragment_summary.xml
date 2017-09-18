@@ -20,6 +20,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/item_margin"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/text_view_text_size"
                 tools:text="@string/min_tariff"/>
 
             <TextView
@@ -27,8 +29,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/item_margin"
-                tools:text="Поездка по адресам: 1, 2, 3."
-                />
+                android:textSize="@dimen/text_view_text_size"
+                android:textColor="@android:color/black"
+                tools:text="Поездка по адресам: 1, 2, 3."/>
 
             <TextView
                 android:id="@+id/calculation"
@@ -36,7 +39,8 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/item_margin"
                 android:text="@string/calculation_in_progress"
-                />
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/text_view_text_size"/>
 
             <TextView
                 android:id="@+id/time"
@@ -44,6 +48,8 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/item_margin"
                 android:text="@string/time_in_progress"
+                android:textSize="@dimen/text_view_text_size"
+                android:textColor="@android:color/black"
                 tools:text="@string/time_hm"/>
 
             <TextView
@@ -52,6 +58,8 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/item_margin"
                 android:text="@string/price_in_progress"
+                android:textSize="@dimen/text_view_text_size"
+                android:textColor="@android:color/black"
                 tools:text="@string/price"/>
         </LinearLayout>
     </ScrollView>
@@ -74,9 +82,10 @@
         <Button
             android:id="@+id/ok_button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="70dp"
 
-            android:text="@string/ok_button"/>
+            android:text="@string/ok_button"
+            android:textSize="@dimen/text_view_text_size"/>
     </FrameLayout>
 
 </RelativeLayout>

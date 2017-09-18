@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Такси 500600</string>
     <string name="map_menu_item">Я здесь!</string>
     <string name="history_menu_item">История заказов</string>
     <string name="login_phone_hint">Введите сюда ваш телефон</string>
