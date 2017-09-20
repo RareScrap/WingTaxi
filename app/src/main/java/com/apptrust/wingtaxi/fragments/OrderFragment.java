@@ -1,20 +1,29 @@
 package com.apptrust.wingtaxi.fragments;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.ConsoleMessage;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.apptrust.wingtaxi.JSInterfaces.SendDataJSInterface;
+import com.apptrust.wingtaxi.JSInterfaces.UpdateDataJSInterface;
 import com.apptrust.wingtaxi.MainActivity;
 import com.apptrust.wingtaxi.R;
 import com.apptrust.wingtaxi.utils.Adres;
@@ -26,7 +35,9 @@ import java.util.ArrayList;
  * и назачит время к которому должно быть подано такси
  * @author RareScrap
  */
-public class OrderFragment extends Fragment {
+public class OrderFragment extends Fragment implements
+        UpdateDataJSInterface.JSRequestUpdateData,
+        SendDataJSInterface.JSRequestData {
     /** Список адресов, которые выбрал пользователь */
     public ArrayList<Adres> adreses = new ArrayList<>();
     /** UI списка */
@@ -41,6 +52,10 @@ public class OrderFragment extends Fragment {
     private TextView timeTextView;
     /** Кнопка перехода к следующему фрагменту */
     private Button nextButton;
+    /** Невидимый {@link android.webkit.WebView}, вычисляющий цену поездки */
+    private WebView webView;
+    /** Время заказа для отправки на сервер */
+    public String dateString;
 
     /**
      * Используйте этот фабричный метод для создания новых экземпляров
@@ -114,6 +129,38 @@ public class OrderFragment extends Fragment {
         timeSetImageButton.setOnClickListener(timeSetClickListener);
         nextButton.setOnClickListener(nextClickListener);
 
+        // Инициализация WebView
+        webView = (WebView) returnedView.findViewById(R.id.web_view);
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+
+        webView.setWebChromeClient(new WebChromeClient() {
+            public boolean onConsoleMessage(ConsoleMessage cm) {
+                Log.d("MyApplication", cm.message() + " -- From line "
+                        + cm.lineNumber() + " of "
+                        + cm.sourceId() );
+                return true;
+            }
+        });
+
+        // Инициализация JS-интерфейсов
+        UpdateDataJSInterface updateDataJSInterface = new UpdateDataJSInterface(this);
+        SendDataJSInterface sendDataJSInterface = new SendDataJSInterface(this);
+        // TODO: Заменить название интерфейса в JS
+        webView.addJavascriptInterface(updateDataJSInterface, "updateDataJSInterface");
+        webView.addJavascriptInterface(sendDataJSInterface, "getDataJSInterface");
+
+        // Последние приготолеия
+        webView.clearCache(true);
+        if (adreses.size() == 1) {
+            nextButton.setText("Добавьте еще один адреес");
+            nextButton.setEnabled(false);
+        } else {
+            nextButton.setText(getString(R.string.next_button_calc));
+            nextButton.setEnabled(false);
+            webView.loadUrl("http://romhacking.pw/NEW_ROUTE2/route_map/map.html");
+        }
 
         // Вернуть UI фрагмента
         return returnedView;
@@ -252,6 +299,14 @@ public class OrderFragment extends Fragment {
             int pos = viewHolder.getLayoutPosition();
             mTaxiListAdapter.adreses.remove(pos);
             mTaxiListAdapter.notifyDataSetChanged();
+            if (adreses.size() < 2) {
+                nextButton.setText("Добавьте еще один адрес");
+                nextButton.setEnabled(false);
+            } else {
+                nextButton.setEnabled(false);
+                nextButton.setText(getString(R.string.next_button_calc));
+                webView.loadUrl("http://romhacking.pw/NEW_ROUTE2/route_map/map.html");
+            }
         }
     };
 
@@ -290,8 +345,26 @@ public class OrderFragment extends Fragment {
          */
         @Override
         public void onClick(View v) {
-            TimePickerDialogFragment timePickerDialogFragment = TimePickerDialogFragment.newInstance(timeTextView);
-            timePickerDialogFragment.show(getFragmentManager(), "l2312");
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Выбрать время")
+                    .setMessage("Заказать машину на сейчас или выбрать другое время?")
+                    //.setIcon(R.drawable.ic_android_cat)
+                    .setCancelable(true)
+                    .setPositiveButton("Сейчас", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            timeTextView.setText("Сейчас");
+                        }
+                    })
+                    .setNegativeButton("Выбрать",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    TimePickerDialogFragment timePickerDialogFragment = TimePickerDialogFragment.newInstance(timeTextView, OrderFragment.this);
+                                    timePickerDialogFragment.show(getFragmentManager(), "l2312");
+                                }
+                            });
+            AlertDialog alert = builder.create();
+            alert.show();
         }
     };
 
@@ -308,7 +381,7 @@ public class OrderFragment extends Fragment {
             FragmentTransaction fTrans = getFragmentManager().beginTransaction();
 
             // Иницилазация нового фрагмета
-            SummaryFragment summaryFragment = SummaryFragment.newInstance(adreses, (String) timeTextView.getText());
+            SummaryFragment summaryFragment = SummaryFragment.newInstance(adreses, dateString);
             fTrans.addToBackStack(null);
             fTrans.replace(R.id.fragment_container, summaryFragment);
             fTrans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
@@ -319,4 +392,58 @@ public class OrderFragment extends Fragment {
             ( (ViewGroup) getActivity().findViewById(R.id.fragment_container) ).removeAllViews();
         }
     };
+
+    @Override
+    public void onJSRequestUpdateAdres(double longitude, double latitude, String address) {}
+
+    @Override
+    public void onJSRequestUpdateRouteLength(float length) {
+        // TODO: Перенести вычисление стоимости на сервер
+        float calclAdditionalKm = 0;
+        if (length - MainActivity.dataProvider.minTariffKm*1000 > 0)
+            calclAdditionalKm = length/1000 - MainActivity.dataProvider.minTariffKm;
+
+        final float additionalKm = calclAdditionalKm;
+        final float additionalPay = additionalKm * MainActivity.dataProvider.additionalPricePerKm;
+
+        final float totalPrice = MainActivity.dataProvider.minTariffPrice + additionalPay;
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                nextButton.setEnabled(true);
+                nextButton.setText(getResources().getString(R.string.next_button_cash, totalPrice));
+            }
+        });
+    }
+
+    @Override
+    public void onJSRequestUpdateTripTime(int h, int m) {}
+
+    @Override
+    public int onJSRequestRoutePointsNumber() {
+        return adreses.size();
+    }
+
+    @Override
+    public double onJSRequestRoutePointCoord(int pointIndex, int coordIndex) {
+        if (pointIndex < 0 || pointIndex > adreses.size()) {
+            Log.e("RoutePointCoord", "Error pointIndex");
+            return -1;
+        }
+
+        switch (coordIndex) {
+            case 0: {
+                return adreses.get(pointIndex).longitude;
+            }
+            case 1: {
+                return adreses.get(pointIndex).latitude;
+            }
+            default: {
+                Log.e("RoutePointCoord", "Error coordIndex");
+                return -1;
+
+            }
+        }
+    }
 }

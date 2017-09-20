@@ -2,6 +2,7 @@ package com.apptrust.wingtaxi.fragments;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -20,10 +21,12 @@ import java.util.Date;
 
 public class TimePickerDialogFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
     private TextView timeTextView;
+    private OrderFragment orderFragment;
 
-    public static TimePickerDialogFragment newInstance(TextView timeTextView) {
+    public static TimePickerDialogFragment newInstance(TextView timeTextView, OrderFragment orderFragment) {
         TimePickerDialogFragment fragment = new TimePickerDialogFragment();
         fragment.timeTextView = timeTextView;
+        fragment.orderFragment = orderFragment;
         return fragment;
     }
 
@@ -39,21 +42,11 @@ public class TimePickerDialogFragment extends DialogFragment implements TimePick
     }
 
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        Calendar rightNow = Calendar.getInstance();
-
         //Date currentTime = Calendar.getInstance().getTime();
         //SimpleDateFormat df = new SimpleDateFormat("HH:mm");
 
+        DialogFragment newFragment = DatePickerDialogFragment.newInstance(hourOfDay, minute, timeTextView, orderFragment);
+        newFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
 
-
-        int a = rightNow.get(Calendar.HOUR_OF_DAY);
-        int b = rightNow.get(Calendar.MINUTE);
-        if (rightNow.get(Calendar.HOUR_OF_DAY) < hourOfDay || (rightNow.get(Calendar.HOUR_OF_DAY) <= hourOfDay && rightNow.get(Calendar.MINUTE) < minute)) {
-            String formattedDate = hourOfDay + ":" + minute;
-            timeTextView.setText(formattedDate);
-        } else {
-            timeTextView.setText("Сейчас");
-        }
     }
-
 }

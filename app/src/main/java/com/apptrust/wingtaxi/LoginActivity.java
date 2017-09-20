@@ -325,7 +325,7 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d("intent_start", "123q");
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.putExtra("smsConfirmed", smsConfirmed);
-                    intent.setFlags(intent.getFlags() | FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    intent.setFlags(intent.getFlags() | FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     startActivity(intent);
                     Log.d("timer_stop", "123q");
                     timer.cancel();
@@ -516,10 +516,14 @@ public class LoginActivity extends AppCompatActivity {
             boolean status = true;
             try {
                 responseJSON = new JSONObject(response);
-                status = responseJSON.getBoolean("status");
             } catch (JSONException e) {
                 // Извещаем ToastHandler о неуспешной отправке запроса с кодом подтверждения
                 toastHandler.obtainMessage(ToastHandler.SERVER_INTERNAL_ERROR).sendToTarget();
+                try {
+                    status = responseJSON.getBoolean("status");
+                } catch (JSONException e1) {
+                    e1.printStackTrace();
+                }
                 e.printStackTrace();
             }
 
@@ -542,6 +546,8 @@ public class LoginActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 // Извещаем ToastHandler об ошибке сервера
                 toastHandler.obtainMessage(ToastHandler.SERVER_INTERNAL_ERROR).sendToTarget();
+
+                dialog.dismiss();
 
                 // Обрабатыаваем исключение
                 e.printStackTrace();

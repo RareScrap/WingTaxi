@@ -2,6 +2,8 @@ package com.apptrust.wingtaxi.fragments;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,7 +11,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +28,7 @@ import android.widget.Toast;
 
 import com.apptrust.wingtaxi.JSInterfaces.SendDataJSInterface;
 import com.apptrust.wingtaxi.JSInterfaces.UpdateDataJSInterface;
+import com.apptrust.wingtaxi.LoginActivity;
 import com.apptrust.wingtaxi.MainActivity;
 import com.apptrust.wingtaxi.R;
 import com.apptrust.wingtaxi.utils.Adres;
@@ -147,7 +152,7 @@ public class SummaryFragment extends Fragment implements
 
         // Последние приготолеия
         webView.clearCache(true);
-        webView.loadUrl("http://romhacking.pw/route_map3/map.html");
+        webView.loadUrl("http://romhacking.pw/NEW_ROUTE2/route_map/map.html");
 
         toastHandler = new Handler(Looper.getMainLooper()) {
             @Override
@@ -302,10 +307,16 @@ public class SummaryFragment extends Fragment implements
             SharedPreferences sharedPref = getActivity().getSharedPreferences("phone", Context.MODE_PRIVATE);
             String phone = sharedPref.getString("phone", "AZAZA");
 
+            // Оставляем только цифры
+            phone = phone.replaceAll("[^0-9]", "");
+
+            SharedPreferences sharedPref1 = getActivity().getSharedPreferences("password", Context.MODE_PRIVATE);
+            String password = sharedPref.getString("password", "nahui_idi_.!.");
+
             try {
                 json.put("addresses", arr);
                 json.put("phoneNumber", phone);
-                json.put("password", "nahui_idi_.!.");
+                json.put("password", password);
                 json.put("price", (int) price);
                 json.put("date", preferedTime);
             } catch (JSONException e) {}
@@ -336,6 +347,32 @@ public class SummaryFragment extends Fragment implements
                 int responseCode=conn.getResponseCode();
 
                 if (responseCode == HttpsURLConnection.HTTP_OK) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            builder.setTitle("Заказ отправлен")
+                                    .setMessage("Вам придет SMS с имененм и телефоном водителя. Ожидайте, пожалуйста. Теперь вы можете закрыть приложение.")
+                                    //.setIcon(R.drawable.ic_android_cat)
+                                    .setCancelable(true)
+                                    .setPositiveButton("Закрыть приложение", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            getActivity().finish();
+                                        }
+                                    })
+                                    .setNegativeButton(R.string.cancel_alert_dialog,
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    dialog.cancel();
+                                                }
+                                            });
+
+                            AlertDialog alert = builder.create();
+                            alert.show();
+                        }
+                    });
+
                     Message message = toastHandler.obtainMessage(1);
                     message.sendToTarget();
 

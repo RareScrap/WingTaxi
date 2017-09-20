@@ -56,8 +56,6 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // TODO: Загружать номер телефоа из SharedPreferences
-
         // Тестовый сценарий
         //phoneNumber = "111";
 
@@ -84,16 +82,7 @@ public class MainActivity extends AppCompatActivity
         //transaction.addToBackStack(null);
         transaction.commit();
 
-        boolean smsConfirmed = false;
-        if (getIntent().getExtras() != null) {
-            smsConfirmed = getIntent().getExtras().getBoolean("smsConfirmed");
-        }
-        // Проверка на наличие номера
-        if (!smsConfirmed) {
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            intent.setFlags(intent.getFlags() | FLAG_ACTIVITY_NO_HISTORY);
-            startActivity(intent); // Показать активити логина
-        }
+        verifyChech();
 
         // Подготавливаем DataProvider для загрузки данных
         if (dataProvider == null) {
@@ -109,6 +98,20 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Dispatch onResume() to fragments.  Note that for better inter-operation
+     * with older versions of the platform, at the point of this call the
+     * fragments attached to the activity are <em>not</em> resumed.  This means
+     * that in some cases the previous state may still be saved, not allowing
+     * fragment transactions that modify the state.  To correctly interact
+     * with fragments in their proper state, you should instead override
+     * {@link #onResumeFragments()}.
+     */
+    @Override
+    protected void onResume() {
+        verifyChech();
+        super.onResume();
+    }
 
     /**
      * Callback for the result from requesting permissions. This method
@@ -203,8 +206,41 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         if (id == R.id.nav_map) {
-            // Handle the camera action
+            // TODO: Отменить загрузку фрагмента, если он уже на экране
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle("Вернуться к выбору начальной точке?")
+                    .setMessage("Если вы продолжите, адреса в текущем заказе будут очищены. Хотите создать заказ заново?")
+                    //.setIcon(R.drawable.ic_android_cat)
+                    .setCancelable(true)
+                    .setPositiveButton(R.string.ok_alert, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Очищаем бекстак
+                            while (getSupportFragmentManager().getBackStackEntryCount() > 0){
+                                getSupportFragmentManager().popBackStackImmediate();
+                            }
+
+                            // Показываем первый фрагмент
+                            MainFragment mainFragment = MainFragment.newInstance(null);
+                            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                            transaction.replace(R.id.fragment_container, mainFragment);
+                            //transaction.addToBackStack(null);
+                            transaction.commit();
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel_alert_dialog,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+            AlertDialog alert = builder.create();
+            alert.show();
         } else if (id == R.id.nav_history) {
+            // TODO: Отменить загрузку фрагмента, если он уже на экране
+            // TODO: Пофиксить баг с заполнением списка, если дважды тыкнуть на кнопку в дравере
+
             FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
 
             // Иницилазация нового фрагмета
@@ -233,5 +269,22 @@ public class MainActivity extends AppCompatActivity
     public void onDownloadError() {
         LoginActivity.dataReady = false;
         // TODO: Вывести диалог с объяснением ошибки сети
+    }
+
+    private boolean verifyChech() {
+        SharedPreferences sharedPref = getSharedPreferences("password", Context.MODE_PRIVATE);
+        String phoneNumber = sharedPref.getString("password", "");
+        boolean smsConfirmed = false;
+        if (getIntent().getExtras() != null) {
+            smsConfirmed = getIntent().getExtras().getBoolean("smsConfirmed");
+        }
+        // Проверка на наличие номера
+        if (/*smsConfirmed || */phoneNumber.isEmpty()) {
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            intent.setFlags(intent.getFlags() | FLAG_ACTIVITY_NO_HISTORY);
+            startActivity(intent); // Показать активити логина
+            return false;
+        }
+        return true;
     }
 }

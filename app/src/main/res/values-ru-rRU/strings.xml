@@ -21,10 +21,10 @@
     <string name="following_addresses">Поездка по адресам:</string>
     <string name="cash">К оплате: %1$.2f \u20bd</string>
     <string name="main_fragment_title">Выберете начальную точку поездки</string>
-    <string name="main_fragment_title_add_address_mode">Выберете куда вы поедете</string>
+    <string name="main_fragment_title_add_address_mode">Куда едем?</string>
     <string name="trip_settings">Настройки поездки</string>
-    <string name="check_order">Подтвердите вашу поездку</string>
-    <string name="check_order_hint">Проверьте, все ли верно</string>
+    <string name="check_order">Все верно?</string>
+    <string name="check_order_hint">Проверьте и подтвердите заказ</string>
     <string name="min_tariff">Минималка: %1$d км. Стоимость минималки - %2$.2f \u20bd. Каждый последующий километр - +%3$.2f \u20bd.</string>
     <string name="calculation">Всего %1$f км. Из них минималка %2$d км + дополнительные %3$f км (%4$.2f \u20bd).</string>
     <string name="calculation_in_progress">Путь: вычисляем…</string>
@@ -38,4 +38,6 @@
     <string name="ok_alert">Продолжить</string>
     <string name="cancel_alert_dialog">Отмена</string>
     <string name="time_now">Сейчас</string>
+    <string name="next_button_calc">Вычисляем стоимость</string>
+    <string name="next_button_cash">Заказать такси - %1$.2f \u20bd</string>
 </resources>

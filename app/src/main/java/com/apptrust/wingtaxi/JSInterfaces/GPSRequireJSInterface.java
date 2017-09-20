@@ -77,17 +77,32 @@ public class GPSRequireJSInterface {
                 double longitude = location.getLongitude();
                 double latitude = location.getLatitude();
 
-                Toast.makeText(activity, String.valueOf(longitude) + "_" + String.valueOf(latitude), Toast.LENGTH_SHORT).show();
+                // для отладки
+                //Toast.makeText(activity, String.valueOf(longitude) + "_" + String.valueOf(latitude), Toast.LENGTH_SHORT).show();
                 double[] coords = {longitude, latitude};
+
+                //Временная заплатка
+                if (longitude == 0.0 || latitude == 0.0) {
+                    coords[1] = 52.286387;
+                    coords[0] = 104.280660;
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(activity, "GPS не включен или еще не настроился", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    return coords;
+                }
+
                 return coords;
                 //return String.valueOf(longitude) + "_" + String.valueOf(latitude);
             } else {
-                double[] coords = {0, 0};
+                double[] coords = {104.280660, 52.286387};
                 return coords;
                 //return String.valueOf(0) + "_" + String.valueOf(0);
             }
         }
-        double[] coords = {0, 0};
+        double[] coords = {104.280660, 52.286387};
         return coords;
         //return String.valueOf(0) + "_" + String.valueOf(0);
     }

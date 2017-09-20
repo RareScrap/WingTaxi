@@ -71,6 +71,7 @@
                 android:layout_toStartOf="@+id/deleteButton"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
+                android:textColor="@android:color/black"
                 android:textSize="@dimen/text_view_text_size"
                 tools:text="ADDRESS"/>
         </RelativeLayout>
