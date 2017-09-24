@@ -26,6 +26,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
+        android:backgroundTint="@color/colorPrimary"
         android:text="@string/order_ready"
         android:textSize="@dimen/text_view_text_size"/>
 
