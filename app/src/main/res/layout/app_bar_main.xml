@@ -16,9 +16,9 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="70dp"
             android:background="?attr/colorPrimary"
-            android:minHeight="100dp"
+            android:minHeight="70dp"
             app:popupTheme="@style/AppTheme.PopupOverlay"
             app:subtitleTextAppearance="@style/Toolbar.SubtitleText"
             app:subtitleTextColor="@android:color/black"

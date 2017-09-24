@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#FBCA01</color>
+    <color name="colorPrimary">#fbca01</color>
     <color name="colorPrimaryDark">#C69F01</color>
     <color name="colorAccent">#000000</color>
     <color name="LoginBackground">#3a3a3a</color>
