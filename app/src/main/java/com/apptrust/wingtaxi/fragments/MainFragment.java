@@ -96,7 +96,7 @@ public class MainFragment extends Fragment implements
         } else {
             ab.setTitle(R.string.main_fragment_title_add_address_mode); // Вывести в титульую строку название блюда
             ab.setSubtitle(""); // Стереть подстроку
-            mButton.setText("Нажмите, когда выберете точку маршрута");
+            mButton.setText("Готово!");
         }
 
         // Инициализация WebView
@@ -127,10 +127,7 @@ public class MainFragment extends Fragment implements
 
         // Последние приготолеия
         webView.clearCache(true);
-        webView.loadUrl("http://romhacking.pw/NEW_MAP4/map.html");
-
-        webView.scrollTo(0, 0);
-        webView.scrollBy(0, 0);
+        webView.loadUrl("http://romhacking.pw/NEW_MAP10/map.html");
 
         // Вернуть View фрагмента
         return returnedView;
