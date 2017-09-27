@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.AppCompatButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,6 @@ import android.webkit.GeolocationPermissions;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.apptrust.wingtaxi.JSInterfaces.MapReadyJSInterface;
@@ -22,6 +22,8 @@ import com.apptrust.wingtaxi.LoginActivity;
 import com.apptrust.wingtaxi.MainActivity;
 import com.apptrust.wingtaxi.R;
 import com.apptrust.wingtaxi.utils.Adres;
+
+import java.util.ArrayList;
 
 /**
  * Основной фрагмент приложения. Представляет собой {@link WebView} с яндекс картой, лайаутом
@@ -37,13 +39,16 @@ public class MainFragment extends Fragment implements
     /** Текстовое представление адреса, который пользователь выбирает на карте*/
     public TextView textView;
     /** Кнопка подтверждения выбора начального адреса */
-    private Button mButton;
-    /** Адрес, который выбрал пользователь*/
+    private AppCompatButton mButton;
+    /** Кнопка, вызывающая диалоговое окно {@link AddAdresDialogFragment} дял выбора
+     * адреса вручную */
+    private AppCompatButton setAddressButton;
+    /** Адрес, который выбрал пользователь */
     private Adres selectedAddress;
 
     /** Ссылка на фрагмент {@link OrderFragment}. Если null, то {@link #buttonClickListener}
      * создаст новый фрагмент {@link OrderFragment}. Если != null, то {@link #selectedAddress}
-     * Добавляется в {@link OrderFragment#adreses}, вместо создания нового фрагмента*/
+     * Добавляется в {@link OrderFragment#adreses}, вместо создания нового фрагмента */
     private OrderFragment orderFragmentLink;
 
     /**
@@ -85,14 +90,18 @@ public class MainFragment extends Fragment implements
 
         // Получение ссылок на элементы UI
         textView = (TextView) returnedView.findViewById(R.id.textView);
-        mButton = (Button) returnedView.findViewById(R.id.button);
+        mButton = (AppCompatButton) returnedView.findViewById(R.id.button);
+        setAddressButton = (AppCompatButton) returnedView.findViewById(R.id.set_address);
+
+        // Установка слушателей
         mButton.setOnClickListener(buttonClickListener);
+        setAddressButton.setOnClickListener(addAddressClicklistener);
 
         // Названичение текста actionBar'у
         ActionBar ab = ((MainActivity) this.getActivity()).getSupportActionBar();
         if (orderFragmentLink == null) {
-            ab.setTitle(R.string.app_name); // Вывести в титульую строку название блюда
-            ab.setSubtitle(R.string.main_fragment_title);
+            ab.setTitle(getString(R.string.first_step_title));
+            ab.setSubtitle("");
         } else {
             ab.setTitle(R.string.main_fragment_title_add_address_mode); // Вывести в титульую строку название блюда
             ab.setSubtitle(""); // Стереть подстроку
@@ -121,9 +130,6 @@ public class MainFragment extends Fragment implements
         webView.addJavascriptInterface(gpsRequireJSInterface, "gpsJavaScriptInterface");
         webView.addJavascriptInterface(updateDataJSInterface, "updateDataJSInterface");
         webView.addJavascriptInterface(mapReadyJSInterface, "mapReadyJSInterface");
-
-        //webView.getSettings().setLoadWithOverviewMode(true);
-        //webView.getSettings().setUseWideViewPort(true);
 
         // Последние приготолеия
         webView.clearCache(true);
@@ -155,10 +161,15 @@ public class MainFragment extends Fragment implements
             } else {
                 FragmentTransaction fTrans = getFragmentManager().beginTransaction();
 
+                // ТЕСТОВЫЙ СПИСОК!
+                ArrayList<Adres> addresses = new ArrayList<>();
+                addresses.add(selectedAddress);
+                addresses.add(selectedAddress);
+
                 // Иницилазация нового фрагмета
-                OrderFragment orderFragment = OrderFragment.newInstance(selectedAddress);
-                fTrans.addToBackStack("MainFragment");
-                fTrans.replace(R.id.fragment_container, orderFragment);
+                AddAddressFragment addAddressFragment = AddAddressFragment.newInstance(false, addresses);
+                fTrans.addToBackStack("AddAddressFragment");
+                fTrans.replace(R.id.fragment_container, addAddressFragment);
                 fTrans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 fTrans.commit();
 
@@ -166,6 +177,17 @@ public class MainFragment extends Fragment implements
                 // TODO: При первом запуске приложения без этой строки можно обойтись, но после изменения currentMode, без этой строки не стирается прдыдущий view
                 ( (ViewGroup) getActivity().findViewById(R.id.fragment_container) ).removeAllViews();
             }
+        }
+    };
+
+    /**
+     * Слушатель кликов по кнопке {@link #setAddressButton}
+     */
+    View.OnClickListener addAddressClicklistener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            AddAdresDialogFragment addAdresDialogFragment = AddAdresDialogFragment.newInstance(false);
+            addAdresDialogFragment.show(getFragmentManager(), "AddAdresDialogFragment");
         }
     };
 
