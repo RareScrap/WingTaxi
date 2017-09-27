@@ -1,19 +1,31 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical"
+              android:weightSum="1"
               tools:context="com.apptrust.wingtaxi.fragments.SummaryFragment">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/webView">
+        android:layout_height="0dp"
+        android:layout_above="@+id/webView"
+        android:layout_weight="0.4"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="Вам придет СМС с Именем и Телефоном водителя. Пожалуйста, ожидайте."
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/text_view_text_size"/>
 
             <TextView
                 android:id="@+id/min"
@@ -29,8 +41,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/item_margin"
-                android:textSize="@dimen/text_view_text_size"
                 android:textColor="@android:color/black"
+                android:textSize="@dimen/text_view_text_size"
                 tools:text="Поездка по адресам: 1, 2, 3."/>
 
             <TextView
@@ -48,8 +60,8 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/item_margin"
                 android:text="@string/time_in_progress"
-                android:textSize="@dimen/text_view_text_size"
                 android:textColor="@android:color/black"
+                android:textSize="@dimen/text_view_text_size"
                 tools:text="@string/time_hm"/>
 
             <TextView
@@ -58,8 +70,8 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/item_margin"
                 android:text="@string/price_in_progress"
-                android:textSize="@dimen/text_view_text_size"
                 android:textColor="@android:color/black"
+                android:textSize="@dimen/text_view_text_size"
                 tools:text="@string/price"/>
         </LinearLayout>
     </ScrollView>
@@ -67,26 +79,43 @@
     <WebView
         android:id="@+id/webView"
         android:layout_width="match_parent"
-        android:layout_height="320dp"
-        android:layout_alignParentBottom="true"/>
+        android:layout_height="0dp"
+        android:layout_weight="0.6"/>
 
-    <FrameLayout
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="true"
-        android:layout_weight="1"
-        android:background="@android:color/background_light">
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentStart="false"
+        android:background="@android:color/background_light"
+        android:orientation="horizontal"
+        >
+
+        <Button
+            android:id="@+id/cancel_order"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_weight="0.5"
+            android:text="Отменить заказ :("
+            android:textSize="@dimen/text_view_text_size"/>
 
         <Button
             android:id="@+id/ok_button"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
-
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_toStartOf="@+id/cancel_order"
+            android:layout_weight="0.5"
             android:backgroundTint="@color/colorPrimary"
-            android:text="@string/ok_button"
+            android:text="@string/close_app"
             android:textSize="@dimen/text_view_text_size"/>
-    </FrameLayout>
 
-</RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>
