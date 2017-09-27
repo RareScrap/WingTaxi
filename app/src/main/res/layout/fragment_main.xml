@@ -10,47 +10,62 @@
         android:id="@+id/webView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/appBarLayout"
-        android:layout_above="@+id/relativeLayout"/>
+        android:layout_alignParentTop="true"
+        android:visibility="visible">
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout"
+    </WebView>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/set_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="3dp"
+        app:backgroundTint="@color/colorPrimary"
+        android:text="Ввести адрес вручную..."/>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/button6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/set_address"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:text="Определить адрес по GPS"
+        app:backgroundTint="@color/colorPrimary"/>
+
+    <LinearLayout
+        android:id="@+id/next_button_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:background="@android:color/background_light">
-
-        <Button
-            android:id="@+id/button"
-            android:layout_width="wrap_content"
-            android:layout_height="70dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/textView"
-            android:backgroundTint="@color/colorPrimary"
-            android:text="@string/start_adres_added"
-            android:textSize="@dimen/text_view_text_size"/>
+        android:background="@android:color/background_light"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/textView"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
             android:ems="10"
             android:inputType="textMultiLine"
             android:textColor="@android:color/black"
             android:textSize="@dimen/text_view_text_size"
             tools:text="ADDRESS"/>
-    </RelativeLayout>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Далее >"
+            android:textSize="@dimen/text_view_text_size"
+            app:backgroundTint="@color/colorPrimary"/>
+    </LinearLayout>
 
 </RelativeLayout>
