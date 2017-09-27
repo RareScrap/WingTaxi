@@ -9,7 +9,7 @@
     <dimen name="button_text_padding">10dp</dimen>
     <dimen name="item_margin">10dp</dimen>
     <dimen name="adres_list_text_padding">5dp</dimen>
-    <dimen name="item_adres_point_padding">20dp</dimen>
+    <dimen name="item_adres_point_padding">10dp</dimen>
     <dimen name="download_dialog_text_margin">10dp</dimen>
     <dimen name="text_view_text_size">17sp</dimen>
 </resources>

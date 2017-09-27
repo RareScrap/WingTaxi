@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Такси 500-700</string>
+    <string name="app_name">ЖЁЛТОЕ ТАКСИ</string>
     <string name="map_menu_item">Я здесь!</string>
     <string name="history_menu_item">История заказов</string>
     <string name="login_phone_hint">Введите сюда ваш телефон</string>
@@ -10,7 +10,7 @@
     <string name="order_ready">Заказать такси</string>
     <string name="add_adres">Добавить адрес</string>
     <string name="add_time">Выбрать время</string>
-    <string name="start_adres_added">Я здесь!</string>
+    <string name="start_adres_added">Далее</string>
     <string name="add_adres_dialog">Введите адрес, который следует включить в маршрут поездки. Такси поедет по адресам в порядке их добавления в список</string>
     <string name="add_adres_hint">Введите адрес сюда</string>
     <string name="ready_to_stop">Нажмите еще раз, что закрыть приложение</string>
@@ -19,25 +19,28 @@
     <string name="download_dialog_text">Загружаем карту</string>
     <string name="ok_button">ОК</string>
     <string name="following_addresses">Поездка по адресам:</string>
-    <string name="cash">К оплате: %1$.2f \u20bd</string>
+    <string name="cash">К оплате: %1$.0f \u20bd</string>
     <string name="main_fragment_title">Выберете начальную точку поездки</string>
     <string name="main_fragment_title_add_address_mode">Куда едем?</string>
-    <string name="trip_settings">Настройки поездки</string>
+    <string name="third_step_title">Шаг 3: ЗАКАЗ ТАКСИ</string>
     <string name="check_order">Все верно?</string>
-    <string name="check_order_hint">Проверьте и подтвердите заказ</string>
-    <string name="min_tariff">Минималка: %1$d км. Стоимость минималки - %2$.2f \u20bd. Каждый последующий километр - +%3$.2f \u20bd.</string>
-    <string name="calculation">Всего %1$.0f км. Из них минималка %2$d км + дополнительные %3$.0f км (%4$.2f \u20bd).</string>
+    <string name="check_order_hint">Подтвердите заказ</string>
+    <string name="min_tariff">Минимальный проезд: %1$d км. Стоимость мин. поезки = %2$.0f \u20bd. Каждый последующий км +%3$.0f \u20bd.</string>
+    <string name="calculation">Всего: %1$.0f км с учетов Вашей скидки (20%%) итого к оплате: Из них минималка %2$d км + дополнительные %3$.0f км (%4$.0f \u20bd).</string>
     <string name="calculation_in_progress">Путь: вычисляем…</string>
     <string name="time_in_progress">Примерное время поездки: вычисляем…</string>
     <string name="time_m">Примерное время поездки: %1$d мин.</string>
     <string name="time_h">Примерное время поездки: %1$d ч.</string>
     <string name="time_hm">Примерное время поездки: %1$d ч %2$d мин.</string>
-    <string name="price">Итого к оплате: %1$.2f \u20bd</string>
+    <string name="price">УБРАТЬ Итого к оплате: %1$.0f \u20bd</string>
     <string name="price_in_progress">Итого к оплате: Вычисляем…</string>
     <string name="fragment_history_title">История заказов</string>
     <string name="ok_alert">Продолжить</string>
     <string name="cancel_alert_dialog">Отмена</string>
     <string name="time_now">Сейчас</string>
-    <string name="next_button_calc">Вычисляем стоимость</string>
-    <string name="next_button_cash">Заказать такси, %1$.2f \u20bd</string>
+    <string name="next_button_calc">Расчитываем стоимость</string>
+    <string name="next_button_cash">Заказать такси, %1$.0f \u20bd</string>
+    <string name="first_step_title">Шаг 1: ГДЕ ВЫ?</string>
+    <string name="second_step_title">Шаг 2: КУДА ВЫ ПОЕДЕТЕ?</string>
+    <string name="close_app">Закрыть приложение</string>
 </resources>
