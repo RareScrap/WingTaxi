@@ -2,30 +2,42 @@ package com.apptrust.wingtaxi.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.AppCompatButton;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
 import com.apptrust.wingtaxi.R;
 import com.apptrust.wingtaxi.utils.Adres;
 
+import java.util.ArrayList;
+
 /**
+ * Отображает форму добавления адреса вручную в виде диалогового окна
  * Created by RareScrap on 15.08.2017.
  */
-
 public class AddAdresDialogFragment extends DialogFragment {
-    public OrderFragment.TaxiListAdapter taxiListAdapter;
-    private EditText editText;
+    private AppCompatButton backButton;
+    private AppCompatButton nextButton;
+    private EditText streetEditText;
+    private EditText houseNumberEditText;
+    /** Если true - фрагмент открыт из страницы настройка заказа. False, если
+     * фрагмент открыт из яндекс карт */
+    private boolean isAddmode;
 
-
-    public static AddAdresDialogFragment newInstance(OrderFragment.TaxiListAdapter taxiListAdapter) {
+    /**
+     * Фабричный конструктор
+     * @param isAddMode Если true - фрагмент открыт из страницы настройка заказа. False, если
+     *                  фрагмент открыт из яндекс карт
+     * @return Экземпляр {@link AddAdresDialogFragment}
+     */
+    public static AddAdresDialogFragment newInstance(boolean isAddMode) {
         AddAdresDialogFragment fragment = new AddAdresDialogFragment();
-        fragment.taxiListAdapter = taxiListAdapter;
+        fragment.isAddmode = isAddMode;
         return fragment;
     }
 
@@ -34,25 +46,59 @@ public class AddAdresDialogFragment extends DialogFragment {
         // Создание диалогового окна
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View addAdresDialogView = getActivity().getLayoutInflater().inflate(
-                R.layout.dialog_fragment_add_adres, null);
+                R.layout.dialog_set_address, null);
         builder.setView(addAdresDialogView); // Добавление GUI
 
-        // Назначение сообщения AlertDialog
-        builder.setTitle("asd1");
-
         // Получение ссылки на элементы UI
-        editText = (EditText) addAdresDialogView.findViewById(R.id.editText);
+        streetEditText = (EditText) addAdresDialogView.findViewById(R.id.street_edit_text);
+        houseNumberEditText = (EditText) addAdresDialogView.findViewById(R.id.house_number_edit_text);
+        backButton = (AppCompatButton) addAdresDialogView.findViewById(R.id.backButton);
+        nextButton = (AppCompatButton) addAdresDialogView.findViewById(R.id.nextButton);
 
-        // Добавление кнопки Set Line Width
-        builder.setPositiveButton("asd2",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        taxiListAdapter.adreses.add(new Adres(0f, 0f, editText.getText().toString()));
-                        taxiListAdapter.notifyDataSetChanged();
-                    }
-                }
-        );
+        // Установка слушателей на кнопки
+        backButton.setOnClickListener(backButtonClickListener);
+        nextButton.setOnClickListener(nextButtonClickListener);
 
-        return builder.create(); // Возвращение диалогового окна
+        // Создание диалога
+        Dialog dialog = builder.create();
+
+        // Автоматически открывать клавиатуру для ввода на первое текстовое поле
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+        // Возвращение диалогового окна
+        return dialog;
     }
+
+    View.OnClickListener backButtonClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            AddAdresDialogFragment.this.dismiss();
+        }
+    };
+
+    /**
+     * Слушатель кнопки "далее", расположенной на вьюхе. Вызывает {@link OrderFragment}.
+     */
+    View.OnClickListener nextButtonClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (isAddmode) {
+                // TODO: Добавить адрес в список
+                AddAdresDialogFragment.this.dismiss();
+            } else {
+                FragmentTransaction fTrans = getFragmentManager().beginTransaction();
+
+                // Иницилазация нового фрагмета
+                OrderFragment orderFragment = OrderFragment.newInstance(new ArrayList<Adres>());
+                fTrans.addToBackStack("OrderFragment");
+                fTrans.replace(R.id.fragment_container, orderFragment);
+                fTrans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                fTrans.commit();
+
+                // Очистка ненужных более View
+                // TODO: При первом запуске приложения без этой строки можно обойтись, но после изменения currentMode, без этой строки не стирается прдыдущий view
+                ((ViewGroup) getActivity().findViewById(R.id.fragment_container)).removeAllViews();
+            }
+        }
+    };
 }
