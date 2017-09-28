@@ -1,6 +1,7 @@
 package com.apptrust.wingtaxi.fragments;
 
 import android.content.DialogInterface;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,6 +11,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -38,24 +41,22 @@ import java.util.ArrayList;
 public class OrderFragment extends Fragment implements
         UpdateDataJSInterface.JSRequestUpdateData,
         SendDataJSInterface.JSRequestData {
+    /** Минимальное количество адресов, достаточных для заказа такси*/
+    private static final int MIN_ADDRESSES_COUNT = 2;
     /** Список адресов, которые выбрал пользователь */
     public ArrayList<Adres> adreses = new ArrayList<>();
     /** UI списка */
     private RecyclerView mRecyclerView;
     /** Адаптер списка */
     private TaxiListAdapter mTaxiListAdapter;
-    /** Кнопка добавления дополнительного адреса */
-    private ImageButton addAdresImageButton;
-    /** Кнопка выбора времени подачи такси */
-    private ImageButton timeSetImageButton;
-    /** {@link TextView} над кнопкой "выбрать время" */
-    private TextView timeTextView;
     /** Кнопка перехода к следующему фрагменту */
     private Button nextButton;
     /** Невидимый {@link android.webkit.WebView}, вычисляющий цену поездки */
     private WebView webView;
     /** Время заказа для отправки на сервер */
     public String dateString;
+    /** View банера */
+    private ImageView banner;
 
     /**
      * Используйте этот фабричный метод для создания новых экземпляров
@@ -66,6 +67,7 @@ public class OrderFragment extends Fragment implements
     public static OrderFragment newInstance(Adres firstAdres) {
         OrderFragment fragment = new OrderFragment();
 
+        // TODO
         // Добавляет первый адрес в список адресов
         fragment.adreses.add(firstAdres);
 
@@ -73,10 +75,16 @@ public class OrderFragment extends Fragment implements
         return fragment;
     }
 
+    /**
+     * Используйте этот фабричный метод для создания новых экземпляров
+     * этого фрагмента с использованием предоставленных параметров
+     * @param addressList Начальный список адресов
+     * @return Новый объект фрагмента {@link OrderFragment}
+     */
     public static OrderFragment newInstance(ArrayList<Adres> addressList) {
         OrderFragment fragment = new OrderFragment();
 
-        // Добавляет первый адрес в список адресов
+        // Добавляет начальные адреса в список адресов
         fragment.adreses = addressList;
 
         // Вернуть новый экземпляр фрагмента
@@ -111,22 +119,21 @@ public class OrderFragment extends Fragment implements
 
         // Инициализация UI списка
         mRecyclerView = (RecyclerView) returnedView.findViewById(R.id.adresRecyclerView);
-        addAdresImageButton = (ImageButton) returnedView.findViewById(R.id.addAdresImageButton);
-        timeSetImageButton = (ImageButton) returnedView.findViewById(R.id.timeSetImageButton);
+        //addAdresImageButton = (ImageButton) returnedView.findViewById(R.id.addAdresImageButton);
+        //timeSetImageButton = (ImageButton) returnedView.findViewById(R.id.timeSetImageButton);
         nextButton = (Button) returnedView.findViewById(R.id.next_button);
-        timeTextView = (TextView) returnedView.findViewById(R.id.selectedTimeTextView);
+        //timeTextView = (TextView) returnedView.findViewById(R.id.selectedTimeTextView);
+        banner = (ImageView) returnedView.findViewById(R.id.banner);
         mTaxiListAdapter = new TaxiListAdapter(adreses, deleteClickListener);
         mRecyclerView.setAdapter(mTaxiListAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         // Названичение текста actionBar'у
         ActionBar ab = ((MainActivity) this.getActivity()).getSupportActionBar();
-        ab.setTitle(R.string.trip_settings); // Вывести в титульую строку название блюда
+        ab.setTitle(R.string.third_step_title); // Вывести в титульую строку название блюда
         ab.setSubtitle(""); // Стереть подстроку
 
         // Устаовка слушателя на кнопки
-        addAdresImageButton.setOnClickListener(addAdresClickListener);
-        timeSetImageButton.setOnClickListener(timeSetClickListener);
         nextButton.setOnClickListener(nextClickListener);
 
         // Инициализация WebView
@@ -135,6 +142,7 @@ public class OrderFragment extends Fragment implements
         webSettings.setJavaScriptEnabled(true);
         webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
 
+        // Включения вывода в консоль логов с WebView
         webView.setWebChromeClient(new WebChromeClient() {
             public boolean onConsoleMessage(ConsoleMessage cm) {
                 Log.d("MyApplication", cm.message() + " -- From line "
@@ -151,9 +159,9 @@ public class OrderFragment extends Fragment implements
         webView.addJavascriptInterface(updateDataJSInterface, "updateDataJSInterface");
         webView.addJavascriptInterface(sendDataJSInterface, "getDataJSInterface");
 
-        // Последние приготолеия
+        // Последние приготолеия WebView
         webView.clearCache(true);
-        if (adreses.size() == 1) {
+        if (adreses.size() < MIN_ADDRESSES_COUNT) {
             nextButton.setText("Добавьте еще один адреес");
             nextButton.setEnabled(false);
         } else {
@@ -166,39 +174,143 @@ public class OrderFragment extends Fragment implements
         return returnedView;
     }
 
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     * has returned, but before any saved state has been restored in to the view.
+     * This gives subclasses a chance to initialize themselves once
+     * they know their view hierarchy has been completely created.  The fragment's
+     * view hierarchy is not however attached to its parent at this point.
+     *
+     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     */
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        // Расчет размеров банера (относительно размера экрана)
+        // TODO: Или лучше относительно своей собственной ширины?
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        ViewGroup.LayoutParams bannerLayoutParams =  banner.getLayoutParams();
+        bannerLayoutParams.width = size.x;
+        // TODO: magic numbers!
+        bannerLayoutParams.height =  3*bannerLayoutParams.width / 8;
+    }
+
     public class TaxiListAdapter extends RecyclerView.Adapter<TaxiListAdapter.ViewHolder> {
         /**
-         * Список адресов, которые выбрал пользователь
+         * Список адресов, которые выбрал пользователь. Последний элемент списка должен быть
+         * null, чтобы в качестве последнего элемента показалась панель с кнопками
          */
-        public ArrayList<Adres> adreses = new ArrayList<>();
-        private final View.OnClickListener clickListener;
+        public ArrayList<Adres> addresses = new ArrayList<>();
+        /** Слушатель клика по кнопке "удалить" */
+        private final View.OnClickListener deleteClickListener;
 
         /**
          * Конструктор, инициализирующий свои поля
          *
-         * @param adreses       Список адресов, которые нужно отобразить в элеметах списка
-         * @param clickListener слушатель клика по кнопке "удалить"
+         * @param adreses Список адресов, которые нужно отобразить в элеметах списка
+         * @param deleteClickListener Слушатель клика по кнопке "удалить"
          */
-        public TaxiListAdapter(ArrayList<Adres> adreses, View.OnClickListener clickListener) {
-            this.adreses = adreses;
-            this.clickListener = clickListener;
+        public TaxiListAdapter(ArrayList<Adres> adreses, View.OnClickListener deleteClickListener) {
+            this.addresses = adreses;
+
+            // null-элемент - маркер для создания последнего элемента с кнопками
+            adreses.add(null);
+
+            this.deleteClickListener = deleteClickListener;
         }
 
 
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public final TextView adresTextView;
-            public final ImageButton deleteButton;
+        /**
+         * Этот ViewHolder используется для двух макетов сразу - item_fragment_order_recyclerview.xml
+         * и item_fragment_order_last_recyclerview. Последняя разметка - последний элемент списка с
+         * кнопками добавления адреса и выбора времени.
+         */
+        private class ViewHolder extends RecyclerView.ViewHolder {
+            private final TextView adresTextView;
+            private final ImageButton deleteButton;
+
+            // Эти View - только для последнего элемента
+            private ImageView point = null;
+            private ImageView timeImageButton = null;
+            private ImageView addCommentButton = null;
+            private TextView addressEditText = null;
+            private TextView timeTextView = null;
+            private TextView addCommentTextView = null;
 
             public ViewHolder(View itemView, View.OnClickListener clickListener) {
                 super(itemView);
 
                 // Получение ссылок на элеметы UI
-                adresTextView = (TextView) itemView.findViewById(R.id.adresTextView);
+                adresTextView = (TextView) itemView.findViewById(R.id.adresEditText);
                 deleteButton = (ImageButton) itemView.findViewById(R.id.deleteButton);
 
-                // Связывание слушателя со кнопкой "удалить"
-                deleteButton.setOnClickListener(clickListener);
+                /*
+                Проверка на последний элемент: deleteButton будет null, т.к. кнопки
+                "удалить" не будет на последнем макете списка, который вызовется onCreateViewHolder()
+                 */
+                if (deleteButton == null) {
+                    // Получаем ссылки на элементы UI последнего элемента списка
+                    point = (ImageView) itemView.findViewById(R.id.point);
+                    timeImageButton = (ImageView) itemView.findViewById(R.id.timeButton);
+                    addCommentButton = (ImageView) itemView.findViewById(R.id.comment_image_view);
+                    addressEditText = (TextView) itemView.findViewById(R.id.adresEditText);
+                    timeTextView = (TextView) itemView.findViewById(R.id.timeTextView);
+                    addCommentTextView = (TextView) itemView.findViewById(R.id.comment_text_view);
+
+                    // Устанавливаем слушатели
+                    point.setOnClickListener(addAdresClickListener);
+                    addressEditText.setOnClickListener(addAdresClickListener);
+                    timeImageButton.setOnClickListener(timeSetClickListener);
+                    timeTextView.setOnClickListener(timeSetClickListener);
+                    addCommentButton.setOnClickListener(addCommentClickListener);
+                    addCommentTextView.setOnClickListener(addCommentClickListener);
+                } else {
+                    // Связывание слушателя со кнопкой "удалить"
+                    deleteButton.setOnClickListener(clickListener);
+                }
             }
+
+            View.OnClickListener addAdresClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AddAdresDialogFragment addAdresDialogFragment = AddAdresDialogFragment.newInstance(true);
+                    addAdresDialogFragment.show(getFragmentManager(), "AddAdresDialogFragment");
+                }
+            };
+            View.OnClickListener timeSetClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Выбрать время")
+                            .setMessage("Заказать машину на сейчас или выбрать другое время?")
+                            //.setIcon(R.drawable.ic_android_cat)
+                            .setCancelable(true)
+                            .setPositiveButton("Сейчас", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    timeTextView.setText("Сейчас");
+                                }
+                            })
+                            .setNegativeButton("Выбрать",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            TimePickerDialogFragment timePickerDialogFragment = TimePickerDialogFragment.newInstance(timeTextView, OrderFragment.this);
+                                            timePickerDialogFragment.show(getFragmentManager(), "l2312");
+                                        }
+                                    });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
+            };
+            View.OnClickListener addCommentClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // TODO
+                }
+            };
+
         }
 
         /**
@@ -224,10 +336,15 @@ public class OrderFragment extends Fragment implements
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             // Заполнение макета item'а списка
-            View view = LayoutInflater.from( parent.getContext() ).inflate(R.layout.item_fragment_order_recyclerview, parent, false);
+            View view;
+            if (parent.getChildCount() < TaxiListAdapter.this.addresses.size()-1)
+                view = LayoutInflater.from( parent.getContext() ).inflate(R.layout.item_fragment_order_recyclerview, parent, false);
+            else
+                view = LayoutInflater.from( parent.getContext() ).inflate(R.layout.item_fragment_order_last_recyclerview, parent, false);
+
 
             // Создание ViewHolder для текущего элемента
-            return (new ViewHolder(view, clickListener));
+            return (new ViewHolder(view, deleteClickListener));
         }
 
         /**
@@ -255,24 +372,36 @@ public class OrderFragment extends Fragment implements
             // Получение объекта FoodItem для заданной позиции ListView
             Adres adresItem = adreses.get(position);
 
-            // Обработка поведения View'хи при разных количествах элементов в списке
-            View topLine = holder.itemView.findViewById(R.id.top_line);
-            View bottomLine = holder.itemView.findViewById(R.id.bottom_line);
-            topLine.setVisibility(View.VISIBLE);
-            bottomLine.setVisibility(View.VISIBLE);
-            if (adreses.size() == position+1 && adreses.size() == 1) {
-                topLine.setVisibility(View.INVISIBLE);
-                bottomLine.setVisibility(View.INVISIBLE);
-            } else {
-                if (position == 0)
+            // Проверяем итем на тип - обычный или с кнопками
+            if (adresItem != null) { // Заполняем обычный элемент
+                // Обработка поведения View'хи при разных количествах элементов в списке
+                View topLine = holder.itemView.findViewById(R.id.top_line);
+                View topLineArrow = holder.itemView.findViewById(R.id.top_line_arrow);
+                View bottomLine = holder.itemView.findViewById(R.id.bottom_line);
+                topLine.setVisibility(View.VISIBLE);
+                bottomLine.setVisibility(View.VISIBLE);
+                if (adreses.size() == position + 1 && adreses.size() == 1) {
                     topLine.setVisibility(View.INVISIBLE);
-                if (position == adreses.size()-1)
+                    topLineArrow.setVisibility(View.INVISIBLE);
                     bottomLine.setVisibility(View.INVISIBLE);
+                } else {
+                    if (position == 0) {
+                        topLine.setVisibility(View.INVISIBLE);
+                        topLineArrow.setVisibility(View.INVISIBLE);
+                    }
+                    if (position == adreses.size() - 1)
+                        bottomLine.setVisibility(View.INVISIBLE);
+                }
+
+                // Скрываем крестики у первых двух адресов
+                if (position < MIN_ADDRESSES_COUNT)
+                    holder.deleteButton.setVisibility(View.INVISIBLE);
+
+                // Назначения текста элементам GUI
+                holder.adresTextView.setText(adresItem.textAdres);
+            } else { // заполняем элемент с кнопками
+                // TODO: Позже
             }
-
-
-            // Назначения текста элементам GUI
-            holder.adresTextView.setText(adresItem.textAdres);
         }
 
         /**
@@ -296,10 +425,10 @@ public class OrderFragment extends Fragment implements
         public void onClick(View view) {
             // TODO: Убрать цепучку getParent
             TaxiListAdapter.ViewHolder viewHolder = (TaxiListAdapter.ViewHolder) mRecyclerView.getChildViewHolder((View) view.getParent().getParent().getParent());
-            int pos = viewHolder.getLayoutPosition();
-            mTaxiListAdapter.adreses.remove(pos);
+            int pos = viewHolder.getLayoutPosition()-1;
+            mTaxiListAdapter.addresses.remove(pos);
             mTaxiListAdapter.notifyDataSetChanged();
-            if (adreses.size() < 2) {
+            if (adreses.size() < MIN_ADDRESSES_COUNT) {
                 nextButton.setText("Добавьте еще один адрес");
                 nextButton.setEnabled(false);
             } else {
@@ -307,64 +436,6 @@ public class OrderFragment extends Fragment implements
                 nextButton.setText(getString(R.string.next_button_calc));
                 webView.loadUrl("http://romhacking.pw/NEW_ROUTE2/route_map/map.html");
             }
-        }
-    };
-
-    View.OnClickListener addAdresClickListener = new View.OnClickListener() {
-        /**
-         * Called when a view has been clicked.
-         *
-         * @param v The view that was clicked.
-         */
-        @Override
-        public void onClick(View v) {
-            FragmentTransaction fTrans = getFragmentManager().beginTransaction();
-
-            // Иницилазация нового фрагмета
-            MainFragment mainFragment = MainFragment.newInstance(OrderFragment.this);
-            fTrans.addToBackStack(null);
-            fTrans.replace(R.id.fragment_container, mainFragment);
-            fTrans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-            fTrans.commit();
-
-            // Очистка ненужных более View
-            // TODO: При первом запуске приложения без этой строки можно обойтись, но после изменения currentMode, без этой строки не стирается прдыдущий view
-            ( (ViewGroup) getActivity().findViewById(R.id.fragment_container) ).removeAllViews();
-
-
-            /*AddAdresDialogFragment addAdresDialogFragment = AddAdresDialogFragment.newInstance(mTaxiListAdapter);
-            addAdresDialogFragment.show(getFragmentManager(), "line width dialog");*/
-        }
-    };
-
-    View.OnClickListener timeSetClickListener = new View.OnClickListener() {
-        /**
-         * Called when a view has been clicked.
-         *
-         * @param v The view that was clicked.
-         */
-        @Override
-        public void onClick(View v) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("Выбрать время")
-                    .setMessage("Заказать машину на сейчас или выбрать другое время?")
-                    //.setIcon(R.drawable.ic_android_cat)
-                    .setCancelable(true)
-                    .setPositiveButton("Сейчас", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            timeTextView.setText("Сейчас");
-                        }
-                    })
-                    .setNegativeButton("Выбрать",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    TimePickerDialogFragment timePickerDialogFragment = TimePickerDialogFragment.newInstance(timeTextView, OrderFragment.this);
-                                    timePickerDialogFragment.show(getFragmentManager(), "l2312");
-                                }
-                            });
-            AlertDialog alert = builder.create();
-            alert.show();
         }
     };
 
@@ -378,18 +449,36 @@ public class OrderFragment extends Fragment implements
          */
         @Override
         public void onClick(View v) {
-            FragmentTransaction fTrans = getFragmentManager().beginTransaction();
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Заказ отправлен!")
+                    .setMessage("Вам придет СМС с Именем и Телефоном водителя. Пожалуйста, ожидайте :)")
+                    .setCancelable(false)
+                    .setNegativeButton("Посмотреть маршрут",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    FragmentTransaction fTrans = getFragmentManager().beginTransaction();
 
-            // Иницилазация нового фрагмета
-            SummaryFragment summaryFragment = SummaryFragment.newInstance(adreses, dateString);
-            fTrans.addToBackStack(null);
-            fTrans.replace(R.id.fragment_container, summaryFragment);
-            fTrans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-            fTrans.commit();
+                                    // Удаляем последний null-элемент (маркер для элемента с навигацией)
+                                    adreses.remove(adreses.size()-1);
 
-            // Очистка ненужных более View
-            // TODO: При первом запуске приложения без этой строки можно обойтись, но после изменения currentMode, без этой строки не стирается прдыдущий view
-            ( (ViewGroup) getActivity().findViewById(R.id.fragment_container) ).removeAllViews();
+                                    // Иницилазация нового фрагмета
+                                    SummaryFragment summaryFragment = SummaryFragment.newInstance(adreses, dateString);
+                                    fTrans.addToBackStack(null);
+                                    fTrans.replace(R.id.fragment_container, summaryFragment);
+                                    fTrans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                                    fTrans.commit();
+
+                                    // Очистка ненужных более View
+                                    // TODO: При первом запуске приложения без этой строки можно обойтись, но после изменения currentMode, без этой строки не стирается прдыдущий view
+                                    ( (ViewGroup) getActivity().findViewById(R.id.fragment_container) ).removeAllViews();
+
+                                    // Закрываем диалог
+                                    dialog.cancel();
+                                }
+                            });
+
+            AlertDialog alert = builder.create();
+            alert.show();
         }
     };
 
