@@ -3,7 +3,6 @@ package com.apptrust.wingtaxi.fragments;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -28,33 +26,22 @@ import android.widget.Toast;
 
 import com.apptrust.wingtaxi.JSInterfaces.SendDataJSInterface;
 import com.apptrust.wingtaxi.JSInterfaces.UpdateDataJSInterface;
-import com.apptrust.wingtaxi.LoginActivity;
 import com.apptrust.wingtaxi.MainActivity;
 import com.apptrust.wingtaxi.R;
 import com.apptrust.wingtaxi.utils.Adres;
-import com.apptrust.wingtaxi.utils.DataProvider;
-import com.apptrust.wingtaxi.utils.Order;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -76,6 +63,8 @@ public class SummaryFragment extends Fragment implements
     private WebView webView;
 
     private Button ok_button;
+    /** Кнопка отмены */
+    private Button cancelButton;
 
     private float price;
     private String preferedTime;
@@ -105,8 +94,11 @@ public class SummaryFragment extends Fragment implements
         priceTextView = (TextView) returnedView.findViewById(R.id.price);
         webView = (WebView) returnedView.findViewById(R.id.webView);
         ok_button = (Button) returnedView.findViewById(R.id.ok_button);
+        cancelButton = (Button) returnedView.findViewById(R.id.cancel_order);
 
+        // Установка слушателей
         ok_button.setOnClickListener(okClickListener);
+        cancelButton.setOnClickListener(cancelButtonClickListner);
 
         // Назначение теста элементам UI
         minTextView.setText(getResources().getString(
@@ -118,8 +110,8 @@ public class SummaryFragment extends Fragment implements
 
         // Названичение текста actionBar'у
         ActionBar ab = ((MainActivity) this.getActivity()).getSupportActionBar();
-        ab.setTitle(R.string.check_order); // Вывести в титульую строку название блюда
-        ab.setSubtitle(getString(R.string.check_order_hint)); // Стереть подстроку
+        ab.setTitle("МАШИНА ОТПРАВЛЕНА!"); // Вывести в титульую строку название блюда
+        ab.setSubtitle(""); // Стереть подстроку
 
         // Текстовое представление всех адресов поездки
         String str = getString(R.string.following_addresses) + " ";
@@ -134,6 +126,7 @@ public class SummaryFragment extends Fragment implements
         webSettings.setJavaScriptEnabled(true);
         webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
 
+        // Включаем вывод логов с WebView
         webView.setWebChromeClient(new WebChromeClient() {
             public boolean onConsoleMessage(ConsoleMessage cm) {
                 Log.d("MyApplication", cm.message() + " -- From line "
@@ -154,6 +147,7 @@ public class SummaryFragment extends Fragment implements
         webView.clearCache(true);
         webView.loadUrl("http://romhacking.pw/NEW_ROUTE2/route_map/map.html");
 
+        // Инициализаци тост=хандлера (для вызова тостов не из UI-потока)
         toastHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
@@ -248,14 +242,12 @@ public class SummaryFragment extends Fragment implements
     }
 
     View.OnClickListener okClickListener = new View.OnClickListener() {
-        /**
-         * Called when a view has been clicked.
-         *
-         * @param view The view that was clicked.
-         */
         @Override
         public void onClick(View view) {
-            Calendar rightNow = Calendar.getInstance();
+            getActivity().finish();
+
+            // TODO: ПЕРЕНЕСТИ В ORDER
+            /*Calendar rightNow = Calendar.getInstance();
             int h = rightNow.get(Calendar.HOUR_OF_DAY);
             int m = rightNow.get(Calendar.MINUTE);
             Order order = new Order(adresses, h, m);
@@ -290,7 +282,33 @@ public class SummaryFragment extends Fragment implements
             }
             catch (Exception e) {
                 e.printStackTrace();
-            }
+            }*/
+        }
+    };
+
+    View.OnClickListener cancelButtonClickListner = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("")
+                    .setMessage("Вы разбиваете нам сердце :)\nВы уверены?")
+                    //.setIcon(R.drawable.ic_android_cat)
+                    .setCancelable(true)
+                    .setPositiveButton("Отменить заказ", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            getActivity().finish();
+                        }
+                    })
+                    .setNegativeButton("Не отменять заказ",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+
+            AlertDialog alert = builder.create();
+            alert.show();
         }
     };
 
@@ -351,8 +369,8 @@ public class SummaryFragment extends Fragment implements
                         @Override
                         public void run() {
                             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                            builder.setTitle("Заказ отправлен")
-                                    .setMessage("Вам придет SMS с имененм и телефоном водителя. Ожидайте, пожалуйста. Теперь вы можете закрыть приложение.")
+                            builder.setTitle("Заказ отправлен водителю :)")
+                                    .setMessage("Вам придет СМС с Именем и Телефоном водителя. Пожалуйста, ожидайте.")
                                     //.setIcon(R.drawable.ic_android_cat)
                                     .setCancelable(true)
                                     .setPositiveButton("Закрыть приложение", new DialogInterface.OnClickListener() {
@@ -361,7 +379,7 @@ public class SummaryFragment extends Fragment implements
                                             getActivity().finish();
                                         }
                                     })
-                                    .setNegativeButton(R.string.cancel_alert_dialog,
+                                    .setNegativeButton("Вернуться в приложение",
                                             new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int id) {
                                                     dialog.cancel();
@@ -393,14 +411,6 @@ public class SummaryFragment extends Fragment implements
                 message.sendToTarget();
                 e.printStackTrace();
             }
-
-            
-            
-            
-            
-        
-
-
 
             return null;
         }

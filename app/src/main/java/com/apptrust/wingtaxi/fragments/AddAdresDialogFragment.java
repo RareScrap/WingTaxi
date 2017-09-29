@@ -9,8 +9,11 @@ import android.support.v7.widget.AppCompatButton;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.EditText;
 
+import com.apptrust.wingtaxi.JSInterfaces.GetSearchResultJSInterface;
 import com.apptrust.wingtaxi.R;
 import com.apptrust.wingtaxi.utils.Adres;
 
@@ -20,7 +23,8 @@ import java.util.ArrayList;
  * Отображает форму добавления адреса вручную в виде диалогового окна
  * Created by RareScrap on 15.08.2017.
  */
-public class AddAdresDialogFragment extends DialogFragment {
+public class AddAdresDialogFragment extends DialogFragment
+    implements GetSearchResultJSInterface.GetSearchResult {
     private AppCompatButton backButton;
     private AppCompatButton nextButton;
     private EditText streetEditText;
@@ -28,6 +32,9 @@ public class AddAdresDialogFragment extends DialogFragment {
     /** Если true - фрагмент открыт из страницы настройка заказа. False, если
      * фрагмент открыт из яндекс карт */
     private boolean isAddmode;
+    private WebView webView;
+
+    private ArrayList<Adres> results = new ArrayList<>();
 
     /**
      * Фабричный конструктор
@@ -54,6 +61,7 @@ public class AddAdresDialogFragment extends DialogFragment {
         houseNumberEditText = (EditText) addAdresDialogView.findViewById(R.id.house_number_edit_text);
         backButton = (AppCompatButton) addAdresDialogView.findViewById(R.id.backButton);
         nextButton = (AppCompatButton) addAdresDialogView.findViewById(R.id.nextButton);
+        webView = (WebView) addAdresDialogView.findViewById(R.id.web_view);
 
         // Установка слушателей на кнопки
         backButton.setOnClickListener(backButtonClickListener);
@@ -64,6 +72,19 @@ public class AddAdresDialogFragment extends DialogFragment {
 
         // Автоматически открывать клавиатуру для ввода на первое текстовое поле
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        webSettings.setGeolocationEnabled(true);
+
+        // Инициализация JS-интерфейсов
+        GetSearchResultJSInterface getSearchResultJSInterface = new GetSearchResultJSInterface(this);
+        webView.addJavascriptInterface(getSearchResultJSInterface, "sendSearchResult");
+
+        // Последние приготолеия
+        webView.clearCache(true);
+        webView.loadUrl("http://romhacking.pw/NEW_MAP10/map.html");
 
         // Возвращение диалогового окна
         return dialog;
@@ -101,4 +122,14 @@ public class AddAdresDialogFragment extends DialogFragment {
             }
         }
     };
+
+    @Override
+    public void onGetSearchResult(String address, float longitude, float latitude) {
+        results.add(new Adres(longitude, latitude, address));
+    }
+
+    @Override
+    public void onGetResultCount(int resultCount) {
+
+    }
 }

@@ -1,8 +1,6 @@
 package com.apptrust.wingtaxi.fragments;
 
-import android.content.ContextWrapper;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -83,10 +81,6 @@ public class HistoryFragment extends Fragment {
                 fileNames.add(f.getName());
         }
 
-
-
-
-
         try {
             for (int i = 0; i < fileNames.size(); i++) {
                 String jsonText = "";
@@ -118,12 +112,6 @@ public class HistoryFragment extends Fragment {
             Log.e("login activity", "Can not read file: " + e.toString());
         }
 
-
-
-
-
-
-
         // Инициализация UI списка
         mRecyclerView = (RecyclerView) returnedView.findViewById(R.id.recyclerView);
         mHistoryListAdapter = new HistoryListAdapter(orders, reuseClickListener);
@@ -139,24 +127,24 @@ public class HistoryFragment extends Fragment {
         return returnedView;
     }
 
-    public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.ViewHolder> {
+    private class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.ViewHolder> {
         /**
          * Список адресов, которые выбрал пользователь
          */
-        public ArrayList<Order> orders = new ArrayList<>();
+        private ArrayList<Order> orders = new ArrayList<>();
         private final View.OnClickListener clickListener;
 
-        public HistoryListAdapter(ArrayList<Order> orders, View.OnClickListener clickListener) {
+        private HistoryListAdapter(ArrayList<Order> orders, View.OnClickListener clickListener) {
             this.orders = orders;
             this.clickListener = clickListener;
         }
 
 
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public final LinearLayout linearLayout;
-            public final Button reuseButton;
+        private class ViewHolder extends RecyclerView.ViewHolder {
+            private final LinearLayout linearLayout;
+            private final Button reuseButton;
 
-            public ViewHolder(View itemView, View.OnClickListener clickListener) {
+            private ViewHolder(View itemView, View.OnClickListener clickListener) {
                 super(itemView);
 
                 // Получение ссылок на элеметы UI
@@ -187,7 +175,7 @@ public class HistoryFragment extends Fragment {
             for (int i = 0; i < orderItem.adresses.size(); i++) {
                 // TODO: Лучшее ли это место для инфлейта элемента списка адресов? Хорошая ли идея перенести это в onCreateViewHolder()?
                 RelativeLayout addressItem = (RelativeLayout) LayoutInflater.from(getContext()).inflate(R.layout.item_fragment_order_recyclerview, null, false);
-                TextView addressItemTExtView = (TextView) addressItem.findViewById(R.id.adresTextView);
+                TextView addressItemTExtView = (TextView) addressItem.findViewById(R.id.adresEditText);
                 ImageButton deleteButton = (ImageButton) addressItem.findViewById(R.id.deleteButton);
 
                 addressItemTExtView.setText(orderItem.adresses.get(i).textAdres);
@@ -198,15 +186,19 @@ public class HistoryFragment extends Fragment {
                 int pos = i;
 
                 View topLine = addressItem.findViewById(R.id.top_line);
+                View topLineArrow = addressItem.findViewById(R.id.top_line_arrow);
                 View bottomLine = addressItem.findViewById(R.id.bottom_line);
                 topLine.setVisibility(View.VISIBLE);
                 bottomLine.setVisibility(View.VISIBLE);
                 if (adreses.size() == pos+1 && adreses.size() == 1) {
                     topLine.setVisibility(View.INVISIBLE);
+                    topLineArrow.setVisibility(View.INVISIBLE);
                     bottomLine.setVisibility(View.INVISIBLE);
                 } else {
-                    if (pos == 0)
+                    if (pos == 0) {
                         topLine.setVisibility(View.INVISIBLE);
+                        topLineArrow.setVisibility(View.INVISIBLE);
+                    }
                     if (pos == adreses.size()-1)
                         bottomLine.setVisibility(View.INVISIBLE);
                 }

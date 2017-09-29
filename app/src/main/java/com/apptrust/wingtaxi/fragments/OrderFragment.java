@@ -380,7 +380,7 @@ public class OrderFragment extends Fragment implements
                 View bottomLine = holder.itemView.findViewById(R.id.bottom_line);
                 topLine.setVisibility(View.VISIBLE);
                 bottomLine.setVisibility(View.VISIBLE);
-                if (adreses.size() == position + 1 && adreses.size() == 1) {
+                if (adreses.size()-1 == position + 1 && adreses.size()-1 == 1) {
                     topLine.setVisibility(View.INVISIBLE);
                     topLineArrow.setVisibility(View.INVISIBLE);
                     bottomLine.setVisibility(View.INVISIBLE);
@@ -389,7 +389,7 @@ public class OrderFragment extends Fragment implements
                         topLine.setVisibility(View.INVISIBLE);
                         topLineArrow.setVisibility(View.INVISIBLE);
                     }
-                    if (position == adreses.size() - 1)
+                    if (position == adreses.size()-1 - 1)
                         bottomLine.setVisibility(View.INVISIBLE);
                 }
 
