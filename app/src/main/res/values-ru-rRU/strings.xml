@@ -43,4 +43,7 @@
     <string name="first_step_title">Шаг 1: ГДЕ ВЫ?</string>
     <string name="second_step_title">Шаг 2: КУДА ВЫ ПОЕДЕТЕ?</string>
     <string name="close_app">Закрыть приложение</string>
+    <string name="an_error_has_occurred">Произошла ошибка!</string>
+    <string name="order_cancelled">Заказ был успешно завершён!</string>
+    <string name="see_you_later">Надеемся увидеть Вас вскоре снова :)</string>
 </resources>

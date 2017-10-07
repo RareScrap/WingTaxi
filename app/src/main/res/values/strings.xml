@@ -5,4 +5,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="an_error_has_occurred">An error has occurred!</string>
+    <string name="order_cancelled">Order was successfully cancelled!</string>
+    <string name="see_you_later">Hope to see you soon again :)</string>
 </resources>

@@ -1,9 +1,12 @@
 package com.apptrust.wingtaxi.fragments;
 
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.icu.util.Output;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -39,9 +42,11 @@ import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -297,7 +302,68 @@ public class SummaryFragment extends Fragment implements
                     .setPositiveButton("Отменить заказ", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            getActivity().finish();
+                            final Activity activity = getActivity();
+
+                            final ProgressDialog pd = new ProgressDialog(getActivity());
+
+                            pd.setTitle("Пожалуйста, подождите...");
+                            pd.setMessage("Отменяем заказ...");
+                            pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                            pd.setCancelable(false);
+
+                            pd.show();
+
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        JSONObject json = new JSONObject();
+                                        json.put("phoneNumber", getActivity().
+                                                getSharedPreferences("phone", Context.MODE_PRIVATE).
+                                                getString("phone", "AZAZA").replaceAll("[^0-9]", ""));
+                                        json.put("password", getActivity().
+                                                getSharedPreferences("password", Context.MODE_PRIVATE).
+                                                getString("password", "nahui_idi_.!."));
+
+                                        HttpURLConnection http = (HttpURLConnection) new URL("http://romhacking.pw:8081/cancelLast").openConnection();
+                                        http.addRequestProperty("Secret", "c8df37bef1275f33");
+                                        http.setDoOutput(true);
+                                        http.setConnectTimeout(5000);
+                                        http.setReadTimeout(5000);
+                                        http.connect();
+                                        OutputStream out = http.getOutputStream();
+                                        out.write(json.toString().getBytes("UTF-8"));
+                                        out.close();
+
+                                        Scanner sc = new Scanner(http.getInputStream());
+                                        String answer = "";
+                                        while (sc.hasNextLine()) answer += sc.nextLine();
+                                        sc.close();
+
+                                        pd.dismiss();
+                                        final AlertDialog.Builder adb = new AlertDialog.Builder(activity);
+
+                                        json = new JSONObject(answer);
+                                        if (json.getBoolean("status")) {
+                                            adb.setTitle(R.string.order_cancelled);
+                                            adb.setMessage(R.string.see_you_later);
+                                        } else {
+                                            adb.setTitle(R.string.an_error_has_occurred);
+                                            adb.setMessage(json.getString("message"));
+                                        }
+                                        adb.setPositiveButton("OK", null);
+                                        activity.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() { adb.create().show(); }
+                                        });
+
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                        pd.dismiss();
+                                    }
+                                }
+                            }).start();
+
                         }
                     })
                     .setNegativeButton("Не отменять заказ",
