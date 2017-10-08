@@ -165,9 +165,9 @@ public class OrderFragment extends Fragment implements
             nextButton.setText("Добавьте еще один адреес");
             nextButton.setEnabled(false);
         } else {
-            nextButton.setText(getString(R.string.next_button_calc));
-            nextButton.setEnabled(false);
-            webView.loadUrl("http://romhacking.pw/NEW_ROUTE2/route_map/map.html");
+            nextButton.setText("Ёбаный позор и костылина");
+            nextButton.setEnabled(true);
+            // webView.loadUrl("http://romhacking.pw/NEW_ROUTE2/route_map/map.html");
         }
 
         // Вернуть UI фрагмента
@@ -432,9 +432,9 @@ public class OrderFragment extends Fragment implements
                 nextButton.setText("Добавьте еще один адрес");
                 nextButton.setEnabled(false);
             } else {
-                nextButton.setEnabled(false);
-                nextButton.setText(getString(R.string.next_button_calc));
-                webView.loadUrl("http://romhacking.pw/NEW_ROUTE2/route_map/map.html");
+                nextButton.setEnabled(true);
+                nextButton.setText("Ебаный позор и костылина");
+                // webView.loadUrl("http://romhacking.pw/NEW_ROUTE2/route_map/map.html");
             }
         }
     };

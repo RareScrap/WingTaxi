@@ -8,4 +8,13 @@
     <string name="an_error_has_occurred">An error has occurred!</string>
     <string name="order_cancelled">Order was successfully cancelled!</string>
     <string name="see_you_later">Hope to see you soon again :)</string>
+
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="location_detecting">Detecting your location...</string>
+    <string name="gps_off">GPS is disabled!</string>
+    <string name="gps_off_message">Access to GPS is needed for detecting your location. Please, turn on the GPS!</string>
+    <string name="turn_on_gps">Turn on the GPS</string>
+    <string name="continue_without_gps">Continue without GPS</string>
 </resources>

@@ -46,4 +46,9 @@
     <string name="an_error_has_occurred">Произошла ошибка!</string>
     <string name="order_cancelled">Заказ был успешно завершён!</string>
     <string name="see_you_later">Надеемся увидеть Вас вскоре снова :)</string>
+    <string name="location_detecting">Определяем Ваше местоположение...</string>
+    <string name="gps_off">GPS выключен!</string>
+    <string name="gps_off_message">Для работы обнаружения Вашего местоположения на карте требуется доступ к GPS датчику, который, судя по всему, у Вас выключен. Пожалуйста, включите его!</string>
+    <string name="turn_on_gps">Включить GPS</string>
+    <string name="continue_without_gps">Продолжить без GPS</string>
 </resources>

@@ -84,6 +84,8 @@ public class MainActivity extends AppCompatActivity
 
         verifyChech();
 
+
+
         // Подготавливаем DataProvider для загрузки данных
         if (dataProvider == null) {
             try {
