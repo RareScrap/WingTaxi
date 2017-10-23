@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:weightSum="1">
+
+    <!-- Невидимый вычислитель цены поездки. Он ДОЛЖЕН быть невидимым-->
+    <WebView
+        android:id="@+id/web_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="invisible"/>
+
+    <!-- Баннер устанавливает размеры програмно! см OrderFragment -->
+    <ImageView
+        android:id="@+id/banner"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scaleType="fitCenter"
+        android:visibility="visible"
+        app:srcCompat="@drawable/banner_prilozhenia"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/adresRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.8">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/next_button"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.2"
+        android:text="@string/order_ready"
+        android:textSize="@dimen/text_view_text_size"
+        app:backgroundTint="@color/colorPrimary"/>
+
+</LinearLayout>

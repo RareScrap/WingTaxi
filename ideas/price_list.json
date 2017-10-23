@@ -1,0 +1,5 @@
+{
+  "min_tariff_km": 7,
+  "min_tariff_price": 99.90,
+  "additional_price_per_km": 25.00
+}

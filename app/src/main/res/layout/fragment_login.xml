@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                style="@style/AppTheme.NoActionBar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/LoginBackground">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="@dimen/login_elements_margin"
+        app:srcCompat="@drawable/logo"/>
+
+    <com.apptrust.wingtaxi.utils.NonSwipeableViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_below="@+id/imageView"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="@dimen/login_elements_margin"
+        android:layout_marginTop="@dimen/login_elements_margin"/>
+
+
+    <Button
+        android:id="@+id/login_enter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/viewPager"
+        android:layout_centerHorizontal="true"
+        android:background="@color/enterButtonBackground"
+        android:paddingEnd="@dimen/button_text_padding"
+        android:paddingStart="@dimen/button_text_padding"
+        android:text="@string/login_enter"/>
+
+</RelativeLayout>

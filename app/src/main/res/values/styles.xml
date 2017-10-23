@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -16,5 +17,36 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+
+    <!-- Кастомный цвет плавающего хинта для TextInputLayout-->
+    <style name="TextAppearence.TextInputLayout.Login" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/login_hint_color</item>
+    </style>
+
+    <!-- Стиль для элементов NavDraw'а -->
+    <style name="NavigationDrawerStyle">
+        <item name="android:textSize">20sp</item><!-- text size in menu-->
+        <item name="android:listPreferredItemHeightSmall">80dp</item><!-- item size in menu-->
+    </style>
+
+    <style name="EditTextUnderline" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorControlNormal">#aaaaaa</item>
+        <item name="colorControlActivated">#aaaaaa</item>
+        <item name="colorControlHighlight">#aaaaaa</item>
+    </style>
+
+    <!-- Стиль hamburger-кнопки -->
+    <style name="DrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@android:color/black</item>
+    </style>
+
+    <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">17sp</item>
+    </style>
+    <style name="Toolbar.SubtitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
+        <item name="android:textSize">17sp</item>
+    </style>
 
 </resources>
