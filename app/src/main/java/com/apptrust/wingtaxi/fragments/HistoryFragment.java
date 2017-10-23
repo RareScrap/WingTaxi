@@ -140,7 +140,7 @@ public class HistoryFragment extends Fragment {
         }
 
 
-        private class ViewHolder extends RecyclerView.ViewHolder {
+        public class ViewHolder extends RecyclerView.ViewHolder {
             private final LinearLayout linearLayout;
             private final Button reuseButton;
 
@@ -190,6 +190,7 @@ public class HistoryFragment extends Fragment {
                 View bottomLine = addressItem.findViewById(R.id.bottom_line);
                 topLine.setVisibility(View.VISIBLE);
                 bottomLine.setVisibility(View.VISIBLE);
+                topLineArrow.setVisibility(View.VISIBLE);
                 if (adreses.size() == pos+1 && adreses.size() == 1) {
                     topLine.setVisibility(View.INVISIBLE);
                     topLineArrow.setVisibility(View.INVISIBLE);

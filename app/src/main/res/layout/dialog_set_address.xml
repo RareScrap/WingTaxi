@@ -26,9 +26,9 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_toStartOf="@+id/house_number_edit_text"
-            android:layout_weight="0.7"
+            android:layout_weight="1"
             android:ems="10"
-            android:hint="Улица..."
+            android:hint="Адрес или организация"
             android:imeOptions="actionNext"
             android:inputType="textPersonName"
             android:windowSoftInputMode="stateAlwaysVisible"/>
@@ -42,7 +42,8 @@
             android:layout_weight="0.3"
             android:ems="10"
             android:hint="Дом..."
-            android:inputType="textPersonName"/>
+            android:inputType="textPersonName"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
@@ -189,6 +190,7 @@
     </ScrollView> -->
 
     <android.support.v7.widget.RecyclerView
+        android:id="@+id/results"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"/>
@@ -197,15 +199,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:visibility="gone"
         android:weightSum="1">
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/backButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignTop="@+id/nextButton"
             android:layout_weight="0.3"
             android:text="\u003C"/>
 
@@ -213,9 +213,6 @@
             android:id="@+id/nextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_toEndOf="@+id/backButton"
             android:layout_weight="0.7"
             android:text="Далее >"
             app:backgroundTint="@color/colorPrimary"/>

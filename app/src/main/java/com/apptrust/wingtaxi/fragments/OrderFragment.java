@@ -1,8 +1,14 @@
 package com.apptrust.wingtaxi.fragments;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Point;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -24,14 +30,34 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.apptrust.wingtaxi.JSInterfaces.SendDataJSInterface;
 import com.apptrust.wingtaxi.JSInterfaces.UpdateDataJSInterface;
 import com.apptrust.wingtaxi.MainActivity;
 import com.apptrust.wingtaxi.R;
 import com.apptrust.wingtaxi.utils.Adres;
+import com.apptrust.wingtaxi.utils.Order;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+
+import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Фрагмент настойки адресов поездки. Позволяет пользователю задать дополительые адреса
@@ -57,6 +83,9 @@ public class OrderFragment extends Fragment implements
     public String dateString;
     /** View банера */
     private ImageView banner;
+
+    private int price;
+    private Handler toastHandler;
 
     /**
      * Используйте этот фабричный метод для создания новых экземпляров
@@ -144,10 +173,14 @@ public class OrderFragment extends Fragment implements
 
         // Включения вывода в консоль логов с WebView
         webView.setWebChromeClient(new WebChromeClient() {
-            public boolean onConsoleMessage(ConsoleMessage cm) {
-                Log.d("MyApplication", cm.message() + " -- From line "
+            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+                /*Log.d("MyApplication", cm.message() + " -- From line "
                         + cm.lineNumber() + " of "
-                        + cm.sourceId() );
+                        + cm.sourceId() );*/
+                Log.d("MyApplication", consoleMessage.message() + " -- From line "
+                        + consoleMessage.lineNumber() + " of "
+                        + consoleMessage.sourceId());
+
                 return true;
             }
         });
@@ -169,6 +202,47 @@ public class OrderFragment extends Fragment implements
             nextButton.setEnabled(false);
             webView.loadUrl("http://romhacking.pw/NEW_ROUTE2/route_map/map.html");
         }
+
+        // Инициализаци тост=хандлера (для вызова тостов не из UI-потока)
+        toastHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                if (msg.what == 1) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Заказ отправлен!")
+                            .setMessage("Вам придет СМС с Именем и Телефоном водителя. Пожалуйста, ожидайте :)")
+                            .setCancelable(false)
+                            .setNegativeButton("Посмотреть маршрут",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            FragmentTransaction fTrans = getFragmentManager().beginTransaction();
+
+                                            // Удаляем последний null-элемент (маркер для элемента с навигацией)
+                                            adreses.remove(adreses.size()-1);
+
+                                            // Иницилазация нового фрагмета
+                                            SummaryFragment summaryFragment = SummaryFragment.newInstance(adreses, dateString);
+                                            fTrans.addToBackStack(null);
+                                            fTrans.replace(R.id.fragment_container, summaryFragment);
+                                            fTrans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                                            fTrans.commit();
+
+                                            // Очистка ненужных более View
+                                            // TODO: При первом запуске приложения без этой строки можно обойтись, но после изменения currentMode, без этой строки не стирается прдыдущий view
+                                            ( (ViewGroup) getActivity().findViewById(R.id.fragment_container) ).removeAllViews();
+
+                                            // Закрываем диалог
+                                            dialog.cancel();
+                                        }
+                                    });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                } else {
+                    Toast.makeText(getContext(), "Не удалось отправить заказ", Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
 
         // Вернуть UI фрагмента
         return returnedView;
@@ -227,7 +301,7 @@ public class OrderFragment extends Fragment implements
          * и item_fragment_order_last_recyclerview. Последняя разметка - последний элемент списка с
          * кнопками добавления адреса и выбора времени.
          */
-        private class ViewHolder extends RecyclerView.ViewHolder {
+        public class ViewHolder extends RecyclerView.ViewHolder {
             private final TextView adresTextView;
             private final ImageButton deleteButton;
 
@@ -275,7 +349,7 @@ public class OrderFragment extends Fragment implements
             View.OnClickListener addAdresClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    AddAdresDialogFragment addAdresDialogFragment = AddAdresDialogFragment.newInstance(true);
+                    AddAdresDialogFragment addAdresDialogFragment = AddAdresDialogFragment.newInstance(true, OrderFragment.this);
                     addAdresDialogFragment.show(getFragmentManager(), "AddAdresDialogFragment");
                 }
             };
@@ -415,6 +489,32 @@ public class OrderFragment extends Fragment implements
         }
     }
 
+    public void addAdres(Adres adres) {
+        adreses.add(adreses.size()-1, adres);
+        for (int i = 0; i < adreses.size(); i++) {
+            if (adreses.get(i) == null) {
+                adreses.remove(i);
+            }
+        }
+        //adreses.add(null);
+
+        mRecyclerView.setAdapter(null);
+        mRecyclerView.setLayoutManager(null);
+        mTaxiListAdapter = new TaxiListAdapter(adreses, deleteClickListener);
+        mRecyclerView.setAdapter(mTaxiListAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mTaxiListAdapter.notifyDataSetChanged();
+
+        if (adreses.size() < MIN_ADDRESSES_COUNT) {
+            nextButton.setText("Добавьте еще один адрес");
+            nextButton.setEnabled(false);
+        } else {
+            nextButton.setEnabled(false);
+            nextButton.setText(getString(R.string.next_button_calc));
+            webView.loadUrl("http://romhacking.pw/NEW_ROUTE2/route_map/map.html");
+        }
+    }
+
     View.OnClickListener deleteClickListener = new View.OnClickListener() {
         /**
          * Called when a view has been clicked.
@@ -426,8 +526,16 @@ public class OrderFragment extends Fragment implements
             // TODO: Убрать цепучку getParent
             TaxiListAdapter.ViewHolder viewHolder = (TaxiListAdapter.ViewHolder) mRecyclerView.getChildViewHolder((View) view.getParent().getParent().getParent());
             int pos = viewHolder.getLayoutPosition()-1;
-            mTaxiListAdapter.addresses.remove(pos);
+            adreses.remove(pos+1);
+            adreses.remove(adreses.size()-1);
+
+            mRecyclerView.setAdapter(null);
+            mRecyclerView.setLayoutManager(null);
+            mTaxiListAdapter = new TaxiListAdapter(adreses, deleteClickListener);
+            mRecyclerView.setAdapter(mTaxiListAdapter);
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             mTaxiListAdapter.notifyDataSetChanged();
+
             if (adreses.size() < MIN_ADDRESSES_COUNT) {
                 nextButton.setText("Добавьте еще один адрес");
                 nextButton.setEnabled(false);
@@ -449,36 +557,40 @@ public class OrderFragment extends Fragment implements
          */
         @Override
         public void onClick(View v) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("Заказ отправлен!")
-                    .setMessage("Вам придет СМС с Именем и Телефоном водителя. Пожалуйста, ожидайте :)")
-                    .setCancelable(false)
-                    .setNegativeButton("Посмотреть маршрут",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    FragmentTransaction fTrans = getFragmentManager().beginTransaction();
+            Calendar rightNow = Calendar.getInstance();
+            int h = rightNow.get(Calendar.HOUR_OF_DAY);
+            int m = rightNow.get(Calendar.MINUTE);
 
-                                    // Удаляем последний null-элемент (маркер для элемента с навигацией)
-                                    adreses.remove(adreses.size()-1);
+            ArrayList<Adres> notNullAdreses = adreses;
+            if (notNullAdreses.get(notNullAdreses.size()-1)== null) {
+                notNullAdreses.remove(notNullAdreses.size()-1);
+            }
+            Order order = new Order(notNullAdreses, h, m);
 
-                                    // Иницилазация нового фрагмета
-                                    SummaryFragment summaryFragment = SummaryFragment.newInstance(adreses, dateString);
-                                    fTrans.addToBackStack(null);
-                                    fTrans.replace(R.id.fragment_container, summaryFragment);
-                                    fTrans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                                    fTrans.commit();
+            GsonBuilder builder = new GsonBuilder();
+            Gson gson = builder.create();
+            Log.i("GSON", gson.toJson(order));
 
-                                    // Очистка ненужных более View
-                                    // TODO: При первом запуске приложения без этой строки можно обойтись, но после изменения currentMode, без этой строки не стирается прдыдущий view
-                                    ( (ViewGroup) getActivity().findViewById(R.id.fragment_container) ).removeAllViews();
+            SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyy-HH.mm.ss");
+            String fileName = format.format(rightNow.getTime()) + ".json";
 
-                                    // Закрываем диалог
-                                    dialog.cancel();
-                                }
-                            });
-
-            AlertDialog alert = builder.create();
-            alert.show();
+            try {
+                //File file = new File(path, rightNow.toString() + ".json");
+                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(
+                        getContext().openFileOutput(
+                                fileName,
+                                Context.MODE_PRIVATE
+                        )
+                );
+                outputStreamWriter.write(gson.toJson(order));
+                outputStreamWriter.close();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+            
+            SendDataTask sendDataTask = new SendDataTask();
+            sendDataTask.execute();
         }
     };
 
@@ -496,6 +608,7 @@ public class OrderFragment extends Fragment implements
         final float additionalPay = additionalKm * MainActivity.dataProvider.additionalPricePerKm;
 
         final float totalPrice = MainActivity.dataProvider.minTariffPrice + additionalPay;
+        price = (int) totalPrice;
 
         getActivity().runOnUiThread(new Runnable() {
             @Override
@@ -511,7 +624,11 @@ public class OrderFragment extends Fragment implements
 
     @Override
     public int onJSRequestRoutePointsNumber() {
-        return adreses.size();
+        if (adreses.get(adreses.size()-1) == null) {
+            return adreses.size()-1;
+        } else {
+            return adreses.size();
+        }
     }
 
     @Override
@@ -533,6 +650,89 @@ public class OrderFragment extends Fragment implements
                 return -1;
 
             }
+        }
+    }
+
+    /**
+     * Отправляет заказ на сервер
+     */
+    private class SendDataTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            JSONObject json = new JSONObject();
+
+            JSONArray arr = new JSONArray();
+            for (int i = 0; i < adreses.size(); i++) {
+                if (adreses.get(i) != null) {
+                    arr.put(adreses.get(i).textAdres);
+                }
+            }
+
+            SharedPreferences sharedPref = getActivity().getSharedPreferences("phone", Context.MODE_PRIVATE);
+            String phone = sharedPref.getString("phone", "AZAZA");
+
+            // Оставляем только цифры
+            phone = phone.replaceAll("[^0-9]", "");
+
+            SharedPreferences sharedPref1 = getActivity().getSharedPreferences("password", Context.MODE_PRIVATE);
+            String password = sharedPref.getString("password", "nahui_idi_.!.");
+
+            try {
+                json.put("addresses", arr);
+                json.put("phoneNumber", phone);
+                json.put("password", password);
+                json.put("price", price);
+                json.put("date", dateString);
+            } catch (JSONException e) {}
+
+
+
+            String response = "";
+            try {
+                URL url = new URL("http://romhacking.pw:8081/makeorder");
+
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(15000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestMethod("GET");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                conn.setRequestProperty("Secret", "c8df37bef1275f33");
+
+
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                writer.write(json.toString());
+
+                writer.flush();
+                writer.close();
+                os.close();
+                int responseCode=conn.getResponseCode();
+
+                if (responseCode == HttpsURLConnection.HTTP_OK) {
+                    Message message = toastHandler.obtainMessage(1);
+                    message.sendToTarget();
+
+                    String line;
+                    BufferedReader br=new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    while ((line=br.readLine()) != null) {
+                        response+=line;
+                    }
+                }
+                else {
+                    Message message = toastHandler.obtainMessage(0);
+                    message.sendToTarget();
+                    response="";
+
+                }
+            } catch (Exception e) {
+                Message message = toastHandler.obtainMessage(0);
+                message.sendToTarget();
+                e.printStackTrace();
+            }
+
+            return null;
         }
     }
 }

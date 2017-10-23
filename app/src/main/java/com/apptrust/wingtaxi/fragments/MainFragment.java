@@ -151,7 +151,7 @@ public class MainFragment extends Fragment implements
 
         // Последние приготолеия
         webView.clearCache(true);
-        webView.loadUrl("http://romhacking.pw/NEW_MAP11/map.html");
+        webView.loadUrl("http://romhacking.pw/NEW_MAP12/map.html");
 
         // Вернуть View фрагмента
         return returnedView;
@@ -182,7 +182,7 @@ public class MainFragment extends Fragment implements
                 // ТЕСТОВЫЙ СПИСОК!
                 ArrayList<Adres> addresses = new ArrayList<>();
                 addresses.add(selectedAddress);
-                addresses.add(selectedAddress);
+                //addresses.add(selectedAddress);
 
                 // Иницилазация нового фрагмета
                 AddAddressFragment addAddressFragment = AddAddressFragment.newInstance(false, addresses);
@@ -204,7 +204,7 @@ public class MainFragment extends Fragment implements
     View.OnClickListener addAddressClicklistener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            AddAdresDialogFragment addAdresDialogFragment = AddAdresDialogFragment.newInstance(false);
+            AddAdresDialogFragment addAdresDialogFragment = AddAdresDialogFragment.newInstance(false, null);
             addAdresDialogFragment.show(getFragmentManager(), "AddAdresDialogFragment");
         }
     };
@@ -225,12 +225,19 @@ public class MainFragment extends Fragment implements
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             } else {
-                // Запрашиваем координаты (без NETWORK_PROVIDER не вызывается слушатель)
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                        1000 * 10, 10, locationListener);
-                locationManager.requestLocationUpdates(
-                        LocationManager.NETWORK_PROVIDER, 1000 * 10, 10,
-                        locationListener);
+                // Проверка на включенный GPS
+                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    Toast.makeText(getContext(), "Пытаемся найти вас", Toast.LENGTH_SHORT).show();
+
+                    // Запрашиваем координаты (без NETWORK_PROVIDER не вызывается слушатель)
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                            1000 * 10, 10, locationListener);
+                    locationManager.requestLocationUpdates(
+                            LocationManager.NETWORK_PROVIDER, 1000 * 10, 10,
+                            locationListener);
+                } else {
+                    Toast.makeText(getContext(), "GPS не включен", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     };
