@@ -11,6 +11,7 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -33,6 +34,8 @@ dependencies {
     compile 'com.github.delight-im:Android-SimpleLocation:v1.0.1'
     compile 'com.google.code.gson:gson:2.8.1'
     compile 'com.android.support:gridlayout-v7:25.3.1'
-    testCompile 'junit:junit:4.12'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.8'
+    compile 'com.google.android.gms:play-services:10.2.6'
+    compile 'com.android.support:multidex:1.0.1'
+    testCompile 'junit:junit:4.12'
 }

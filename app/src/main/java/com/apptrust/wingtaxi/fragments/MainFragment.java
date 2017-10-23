@@ -1,7 +1,13 @@
 package com.apptrust.wingtaxi.fragments;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
@@ -14,6 +20,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.apptrust.wingtaxi.JSInterfaces.MapReadyJSInterface;
 import com.apptrust.wingtaxi.JSInterfaces.UpdateDataJSInterface;
@@ -22,8 +29,9 @@ import com.apptrust.wingtaxi.LoginActivity;
 import com.apptrust.wingtaxi.MainActivity;
 import com.apptrust.wingtaxi.R;
 import com.apptrust.wingtaxi.utils.Adres;
-
 import java.util.ArrayList;
+
+import static android.content.Context.LOCATION_SERVICE;
 
 /**
  * Основной фрагмент приложения. Представляет собой {@link WebView} с яндекс картой, лайаутом
@@ -40,6 +48,8 @@ public class MainFragment extends Fragment implements
     public TextView textView;
     /** Кнопка подтверждения выбора начального адреса */
     private AppCompatButton mButton;
+    /** Кнопка определения местоположения */
+    private AppCompatButton GPSButton;
     /** Кнопка, вызывающая диалоговое окно {@link AddAdresDialogFragment} дял выбора
      * адреса вручную */
     private AppCompatButton setAddressButton;
@@ -50,6 +60,9 @@ public class MainFragment extends Fragment implements
      * создаст новый фрагмент {@link OrderFragment}. Если != null, то {@link #selectedAddress}
      * Добавляется в {@link OrderFragment#adreses}, вместо создания нового фрагмента */
     private OrderFragment orderFragmentLink;
+    /** {@link LocationManager} для работы с GPS */
+    private LocationManager locationManager;
+
 
     /**
      * Используйте этот фабричный метод для создания новых экземпляров
@@ -92,10 +105,15 @@ public class MainFragment extends Fragment implements
         textView = (TextView) returnedView.findViewById(R.id.textView);
         mButton = (AppCompatButton) returnedView.findViewById(R.id.button);
         setAddressButton = (AppCompatButton) returnedView.findViewById(R.id.set_address);
+        GPSButton = (AppCompatButton) returnedView.findViewById(R.id.gps_button);
 
         // Установка слушателей
         mButton.setOnClickListener(buttonClickListener);
         setAddressButton.setOnClickListener(addAddressClicklistener);
+        GPSButton.setOnClickListener(GPSButtonClickListener);
+
+        // Инициализация GPS
+        locationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
 
         // Названичение текста actionBar'у
         ActionBar ab = ((MainActivity) this.getActivity()).getSupportActionBar();
@@ -133,7 +151,7 @@ public class MainFragment extends Fragment implements
 
         // Последние приготолеия
         webView.clearCache(true);
-        webView.loadUrl("http://romhacking.pw/NEW_MAP10/map.html");
+        webView.loadUrl("http://romhacking.pw/NEW_MAP12/map.html");
 
         // Вернуть View фрагмента
         return returnedView;
@@ -164,7 +182,7 @@ public class MainFragment extends Fragment implements
                 // ТЕСТОВЫЙ СПИСОК!
                 ArrayList<Adres> addresses = new ArrayList<>();
                 addresses.add(selectedAddress);
-                addresses.add(selectedAddress);
+                //addresses.add(selectedAddress);
 
                 // Иницилазация нового фрагмета
                 AddAddressFragment addAddressFragment = AddAddressFragment.newInstance(false, addresses);
@@ -175,7 +193,7 @@ public class MainFragment extends Fragment implements
 
                 // Очистка ненужных более View
                 // TODO: При первом запуске приложения без этой строки можно обойтись, но после изменения currentMode, без этой строки не стирается прдыдущий view
-                ( (ViewGroup) getActivity().findViewById(R.id.fragment_container) ).removeAllViews();
+                ((ViewGroup) getActivity().findViewById(R.id.fragment_container)).removeAllViews();
             }
         }
     };
@@ -186,8 +204,69 @@ public class MainFragment extends Fragment implements
     View.OnClickListener addAddressClicklistener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            AddAdresDialogFragment addAdresDialogFragment = AddAdresDialogFragment.newInstance(false);
+            AddAdresDialogFragment addAdresDialogFragment = AddAdresDialogFragment.newInstance(false, null);
             addAdresDialogFragment.show(getFragmentManager(), "AddAdresDialogFragment");
+        }
+    };
+
+    /**
+     * Слушатель для кнопки определения местоположения
+     */
+    View.OnClickListener GPSButtonClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            } else {
+                // Проверка на включенный GPS
+                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    Toast.makeText(getContext(), "Пытаемся найти вас", Toast.LENGTH_SHORT).show();
+
+                    // Запрашиваем координаты (без NETWORK_PROVIDER не вызывается слушатель)
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                            1000 * 10, 10, locationListener);
+                    locationManager.requestLocationUpdates(
+                            LocationManager.NETWORK_PROVIDER, 1000 * 10, 10,
+                            locationListener);
+                } else {
+                    Toast.makeText(getContext(), "GPS не включен", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    };
+
+    /**
+     * Слушатель для событий GPS датчика
+     */
+    private LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            Toast.makeText(getActivity(), location.getLatitude() + " " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+            // Отображение местонахождения на карте
+            webView.loadUrl("javascript:function_two(" + location.getLatitude() + "," + location.getLongitude() + ")");
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+            Toast.makeText(getActivity(), "onStatusChanged:", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            Toast.makeText(getActivity(), "onProviderEnabled", Toast.LENGTH_SHORT).show();
+            //showLocation(locationManager.getLastKnownLocation(provider));
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            Toast.makeText(getActivity(), "onProviderDisabled", Toast.LENGTH_SHORT).show();
         }
     };
 
