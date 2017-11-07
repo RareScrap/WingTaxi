@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -19,6 +22,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.apptrust.wingtaxi.JSInterfaces.GPSRequireJSInterface;
 import com.apptrust.wingtaxi.fragments.HistoryFragment;
@@ -170,7 +174,7 @@ public class MainActivity extends AppCompatActivity
             FragmentManager.BackStackEntry backEntry = getSupportFragmentManager().getBackStackEntryAt(index);
             //Fragment asd = getSupportFragmentManager();
             String tag = backEntry.getName();
-            if ("MainFragment".equals(tag)) {
+            if ("OrderFragment".equals(tag) || tag == null) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setTitle("Вернуться к выбору начальной точке?")
                         .setMessage("Если вы продолжите, адреса в этом заказе будут очищены")
@@ -179,6 +183,22 @@ public class MainActivity extends AppCompatActivity
                         .setPositiveButton(R.string.ok_alert, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                FragmentManager fragmentManager = getSupportFragmentManager();
+                                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+                                FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
+
+                                // Иницилазация нового фрагмета
+                                MainFragment mainFragment = MainFragment.newInstance(null);
+                                fTrans.addToBackStack("AddAddressFragment");
+                                fTrans.replace(R.id.fragment_container, mainFragment);
+                                fTrans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                                fTrans.commit();
+
+                                // Очистка ненужных более View
+                                // TODO: При первом запуске приложения без этой строки можно обойтись, но после изменения currentMode, без этой строки не стирается прдыдущий view
+                                ((ViewGroup) MainActivity.this.findViewById(R.id.fragment_container)).removeAllViews();
+
                                 MainActivity.super.onBackPressed();
                                 return;
                             }
@@ -286,7 +306,21 @@ public class MainActivity extends AppCompatActivity
             intent.setFlags(intent.getFlags() | FLAG_ACTIVITY_NO_HISTORY);
             startActivity(intent); // Показать активити логина
             return false;
+        } else {
+            if (!SplashActivity.skip) {
+                Intent intent = new Intent(MainActivity.this, SplashActivity.class);
+                intent.setFlags(intent.getFlags() | FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(intent); // Показать активити логина
+                return false;
+            }
         }
         return true;
     }
+
+    public Handler mHandler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message message) {
+            Toast.makeText(MainActivity.this, "Отсуствует подключение к сети", Toast.LENGTH_SHORT).show();
+        }
+    };
 }

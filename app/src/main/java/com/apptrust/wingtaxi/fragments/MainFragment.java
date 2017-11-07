@@ -223,7 +223,7 @@ public class MainFragment extends Fragment implements
                 //                                          int[] grantResults)
                 // to handle the case where the user grants the permission. See the documentation
                 // for ActivityCompat#requestPermissions for more details.
-                return;
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, GPSRequireJSInterface.ACCESS_FINE_LOCATION_PERMISSION_REQUEST_CODE);
             } else {
                 // Проверка на включенный GPS
                 if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
@@ -269,6 +269,16 @@ public class MainFragment extends Fragment implements
             Toast.makeText(getActivity(), "onProviderDisabled", Toast.LENGTH_SHORT).show();
         }
     };
+
+    public void loadMapAgain() {
+        webView.loadUrl("http://romhacking.pw/NEW_MAP12/map.html");
+    }
+
+    /*@Override
+    public void onPause() {
+        super.onPause();
+        locationManager.remolocationListener
+    }*/
 
     @Override
     public void onMapReady() {

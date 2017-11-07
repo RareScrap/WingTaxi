@@ -7,6 +7,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.AppCompatButton;
@@ -30,6 +31,7 @@ import android.widget.Toast;
 
 import com.apptrust.wingtaxi.JSInterfaces.GetSearchResultJSInterface;
 import com.apptrust.wingtaxi.LoginActivity;
+import com.apptrust.wingtaxi.MainActivity;
 import com.apptrust.wingtaxi.R;
 import com.apptrust.wingtaxi.utils.Adres;
 
@@ -286,6 +288,12 @@ public class AddAdresDialogFragment extends DialogFragment {
          */
         @Override
         protected void onPostExecute(String jsonString) {
+            if (jsonString == null) {
+                Message message = ((MainActivity) getActivity()).mHandler.obtainMessage(1);
+                message.sendToTarget();
+                return;
+            }
+
             JSONObject jsonObject = null;
             try {
                 jsonObject = new JSONObject(jsonString);

@@ -378,7 +378,7 @@ public class SummaryFragment extends Fragment implements
         }
     };
 
-    private class SendDataTask extends AsyncTask<Void, Void, Void> {
+    /*private class SendDataTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
             JSONObject json = new JSONObject();
@@ -480,5 +480,5 @@ public class SummaryFragment extends Fragment implements
 
             return null;
         }
-    }
+    }*/
 }

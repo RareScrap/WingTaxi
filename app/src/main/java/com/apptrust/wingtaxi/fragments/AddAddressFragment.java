@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -298,6 +299,12 @@ public class AddAddressFragment extends Fragment {
          */
         @Override
         protected void onPostExecute(String jsonString) {
+            if (jsonString == null || jsonString == "") {
+                Message message = ((MainActivity) getActivity()).mHandler.obtainMessage(1);
+                message.sendToTarget();
+                return;
+            }
+
             JSONObject jsonObject = null;
             try {
                 jsonObject = new JSONObject(jsonString);

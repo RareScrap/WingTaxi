@@ -1,5 +1,7 @@
 package com.apptrust.wingtaxi.fragments;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -21,6 +23,7 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -34,6 +37,7 @@ import android.widget.Toast;
 
 import com.apptrust.wingtaxi.JSInterfaces.SendDataJSInterface;
 import com.apptrust.wingtaxi.JSInterfaces.UpdateDataJSInterface;
+import com.apptrust.wingtaxi.LoginActivity;
 import com.apptrust.wingtaxi.MainActivity;
 import com.apptrust.wingtaxi.R;
 import com.apptrust.wingtaxi.utils.Adres;
@@ -56,6 +60,9 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -144,6 +151,10 @@ public class OrderFragment extends Fragment implements
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Скрываем клавиатуру, т.к. она больше нам не понадобится
+        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
+
         View returnedView = inflater.inflate(R.layout.fragment_order, container, false);
 
         // Инициализация UI списка
@@ -198,10 +209,28 @@ public class OrderFragment extends Fragment implements
             nextButton.setText("Добавьте еще один адреес");
             nextButton.setEnabled(false);
         } else {
-            nextButton.setText("Ёбаный позор и костылина");
-            nextButton.setEnabled(true);
-            // webView.loadUrl("http://romhacking.pw/NEW_ROUTE2/route_map/map.html");
+            //nextButton.setText("Ёбаный позор и костылина");
+            nextButton.setEnabled(false);
+            webView.loadUrl("http://romhacking.pw/NEW_ROUTE2/route_map/map.html");
         }
+
+        timer = new Timer();
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                boolean a= nextButton.getText().toString().contains("\u20BD");
+                boolean b = nextButton.getText().toString().contains("Расчитываем стоимость");
+                if (!a || b) {
+                    Message message = toastHandler.obtainMessage(2);
+                    message.sendToTarget();
+                    timer.purge();
+                    timer.cancel();
+                }
+            }
+
+            // TODO: Обработать ситуацию, когда карта так и не была готова
+        };
+        timer.schedule(timerTask, 10000, 3000);
 
         // Инициализаци тост=хандлера (для вызова тостов не из UI-потока)
         toastHandler = new Handler(Looper.getMainLooper()) {
@@ -212,17 +241,84 @@ public class OrderFragment extends Fragment implements
                     builder.setTitle("Заказ отправлен!")
                             .setMessage("Вам придет СМС с Именем и Телефоном водителя. Пожалуйста, ожидайте :)")
                             .setCancelable(false)
+                            /*.setPositiveButton("Исправить ошибку в заказе", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    final Activity activity = getActivity();
+
+                                    final ProgressDialog pd = new ProgressDialog(getActivity());
+
+                                    pd.setTitle("Пожалуйста, подождите...");
+                                    pd.setMessage("Отменяем заказ...");
+                                    pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                                    pd.setCancelable(false);
+
+                                    pd.show();
+
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                JSONObject json = new JSONObject();
+                                                json.put("phoneNumber", getActivity().
+                                                        getSharedPreferences("phone", Context.MODE_PRIVATE).
+                                                        getString("phone", "AZAZA").replaceAll("[^0-9]", ""));
+                                                json.put("password", getActivity().
+                                                        getSharedPreferences("password", Context.MODE_PRIVATE).
+                                                        getString("password", "nahui_idi_.!."));
+
+                                                HttpURLConnection http = (HttpURLConnection) new URL("http://romhacking.pw:8081/cancelLast").openConnection();
+                                                http.addRequestProperty("Secret", "c8df37bef1275f33");
+                                                http.setDoOutput(true);
+                                                http.setConnectTimeout(5000);
+                                                http.setReadTimeout(5000);
+                                                http.connect();
+                                                OutputStream out = http.getOutputStream();
+                                                out.write(json.toString().getBytes("UTF-8"));
+                                                out.close();
+
+                                                Scanner sc = new Scanner(http.getInputStream());
+                                                String answer = "";
+                                                while (sc.hasNextLine()) answer += sc.nextLine();
+                                                sc.close();
+
+                                                pd.dismiss();
+                                                final AlertDialog.Builder adb = new AlertDialog.Builder(activity);
+
+                                                json = new JSONObject(answer);
+                                                if (json.getBoolean("status")) {
+                                                    adb.setTitle(R.string.order_cancelled);
+                                                    adb.setMessage(R.string.see_you_later);
+                                                } else {
+                                                    adb.setTitle(R.string.an_error_has_occurred);
+                                                    adb.setMessage(json.getString("message"));
+                                                }
+                                                adb.setPositiveButton("OK", null);
+                                                activity.runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() { adb.create().show(); }
+                                                });
+
+                                            } catch (Exception ex) {
+                                                ex.printStackTrace();
+                                                pd.dismiss();
+                                            }
+                                        }
+                                    }).start();
+
+                                }
+                            })*/
                             .setNegativeButton("Посмотреть маршрут",
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             FragmentTransaction fTrans = getFragmentManager().beginTransaction();
 
                                             // Удаляем последний null-элемент (маркер для элемента с навигацией)
-                                            adreses.remove(adreses.size()-1);
+                                            //adreses.remove(adreses.size()-1);
 
                                             // Иницилазация нового фрагмета
                                             SummaryFragment summaryFragment = SummaryFragment.newInstance(adreses, dateString);
-                                            fTrans.addToBackStack(null);
+                                            fTrans.addToBackStack("SummaryFragment");
                                             fTrans.replace(R.id.fragment_container, summaryFragment);
                                             fTrans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                                             fTrans.commit();
@@ -239,6 +335,11 @@ public class OrderFragment extends Fragment implements
                     AlertDialog alert = builder.create();
                     alert.show();
                 } else {
+                    if (msg.what == 2) {
+                        webView.loadUrl("http://romhacking.pw/NEW_ROUTE2/route_map/map.html");
+                        Toast.makeText(getContext(), "Проверьте подключение к интернету", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     Toast.makeText(getContext(), "Не удалось отправить заказ", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -247,6 +348,15 @@ public class OrderFragment extends Fragment implements
         // Вернуть UI фрагмента
         return returnedView;
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        timer.cancel();
+        timer.purge();
+    }
+
+    Timer timer = new Timer();
 
     /**
      * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
@@ -490,6 +600,27 @@ public class OrderFragment extends Fragment implements
     }
 
     public void addAdres(Adres adres) {
+        timer.cancel();
+        timer.purge();
+        timer = new Timer();
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                boolean a= nextButton.getText().toString().contains("\u20BD");
+                boolean b = nextButton.getText().toString().contains("Расчитываем стоимость");
+                if (!a || b) {
+                    Message message = toastHandler.obtainMessage(2);
+                    message.sendToTarget();
+                    timer.purge();
+                    timer.cancel();
+                }
+            }
+
+            // TODO: Обработать ситуацию, когда карта так и не была готова
+        };
+        timer.schedule(timerTask, 20000, 10000);
+
+
         adreses.add(adreses.size()-1, adres);
         for (int i = 0; i < adreses.size(); i++) {
             if (adreses.get(i) == null) {
@@ -540,9 +671,9 @@ public class OrderFragment extends Fragment implements
                 nextButton.setText("Добавьте еще один адрес");
                 nextButton.setEnabled(false);
             } else {
-                nextButton.setEnabled(true);
-                nextButton.setText("Ебаный позор и костылина");
-                // webView.loadUrl("http://romhacking.pw/NEW_ROUTE2/route_map/map.html");
+                nextButton.setEnabled(false);
+                //nextButton.setText("Ебаный позор и костылина");
+                webView.loadUrl("http://romhacking.pw/NEW_ROUTE2/route_map/map.html");
             }
         }
     };
@@ -675,7 +806,7 @@ public class OrderFragment extends Fragment implements
             phone = phone.replaceAll("[^0-9]", "");
 
             SharedPreferences sharedPref1 = getActivity().getSharedPreferences("password", Context.MODE_PRIVATE);
-            String password = sharedPref.getString("password", "nahui_idi_.!.");
+            String password = sharedPref1.getString("password", "nahui_idi_.!.");
 
             try {
                 json.put("addresses", arr);

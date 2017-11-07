@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * @author RareScrap
@@ -105,6 +106,7 @@ public class HistoryFragment extends Fragment {
                     orders.add(order);
                 }
             }
+            Collections.reverse(orders);
         }
         catch (FileNotFoundException e) {
             Log.e("login activity", "File not found: " + e.toString());

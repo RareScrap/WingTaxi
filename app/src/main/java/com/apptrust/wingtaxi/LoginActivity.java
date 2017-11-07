@@ -419,6 +419,11 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String response) {
             // TODO: Проверку на null
+            if (response == null) {
+                toastHandler.obtainMessage(ToastHandler.CONNECTION_ERROR).sendToTarget();
+                dialog.dismiss();
+                return;
+            }
 
             JSONObject responseJSON = null;
             try {
@@ -510,7 +515,11 @@ public class LoginActivity extends AppCompatActivity {
          */
         @Override
         protected void onPostExecute(String response) {
-            // TODO: Проверку на null
+            if (response == null) {
+                toastHandler.obtainMessage(ToastHandler.CONNECTION_ERROR).sendToTarget();
+                dialog.dismiss();
+                return;
+            }
 
             JSONObject responseJSON = null;
             boolean status = true;
